@@ -1,0 +1,170 @@
+[
+  {
+    "model": "booking.section",
+    "pk": 1,
+    "fields": {
+      "name": "Main Hall",
+      "description": "Large indoor hall"
+    }
+  },
+  {
+    "model": "booking.section",
+    "pk": 2,
+    "fields": {
+      "name": "Balcony",
+      "description": "Overlooking the city"
+    }
+  },
+  {
+    "model": "booking.section",
+    "pk": 3,
+    "fields": {
+      "name": "Private Room",
+      "description": "Quiet area"
+    }
+  },
+
+
+
+  {
+    "model": "booking.seat",
+    "pk": 1,
+    "fields": {
+      "section": 1,
+      "seat_number": "M-01",
+      "is_active": true,
+      "created_at": "2024-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "booking.seat",
+    "pk": 2,
+    "fields": {
+      "section": 1,
+      "seat_number": "M-02",
+      "is_active": true,
+      "created_at": "2024-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "booking.seat",
+    "pk": 3,
+    "fields": {
+      "section": 1,
+      "seat_number": "M-03",
+      "is_active": true,
+      "created_at": "2024-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "booking.seat",
+    "pk": 4,
+    "fields": {
+      "section": 1,
+      "seat_number": "M-04",
+      "is_active": true,
+      "created_at": "2024-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "booking.seat",
+    "pk": 5,
+    "fields": {
+      "section": 2,
+      "seat_number": "B-01",
+      "is_active": true,
+      "created_at": "2024-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "booking.seat",
+    "pk": 6,
+    "fields": {
+      "section": 2,
+      "seat_number": "B-02",
+      "is_active": true,
+      "created_at": "2024-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "booking.seat",
+    "pk": 7,
+    "fields": {
+      "section": 2,
+      "seat_number": "B-03",
+      "is_active": true,
+      "created_at": "2024-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "booking.seat",
+    "pk": 8,
+    "fields": {
+      "section": 3,
+      "seat_number": "P-01",
+      "is_active": true,
+      "created_at": "2024-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "booking.seat",
+    "pk": 9,
+    "fields": {
+      "section": 3,
+      "seat_number": "P-02",
+      "is_active": true,
+      "created_at": "2024-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "booking.seat",
+    "pk": 10,
+    "fields": {
+      "section": 3,
+      "seat_number": "P-03",
+      "is_active": true,
+      "created_at": "2024-01-01T00:00:00Z"
+    }
+  },
+
+
+
+  {
+    "model": "booking.booking",
+    "pk": 1,
+    "fields": {
+      "user": 2,
+      "seat": 1,
+      "booking_code": "BK-001",
+      "name": "John Doe",
+      "phone": "123456",
+      "email": "john@example.com",
+      "special_request": "",
+      "amount": "25.00",
+      "is_paid": true,
+      "is_confirmed": true,
+      "created_at": "2024-01-01T00:00:00Z"
+    }
+  },
+
+
+
+  {
+    "model": "booking.orderitem",
+    "pk": 1,
+    "fields": {
+      "booking": 1,
+      "menu_item": 1,
+      "quantity": 2
+    }
+  },
+  {
+    "model": "booking.orderitem",
+    "pk": 2,
+    "fields": {
+      "booking": 1,
+      "menu_item": 4,
+      "quantity": 1
+    }
+  }
+]

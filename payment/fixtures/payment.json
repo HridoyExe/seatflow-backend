@@ -1,0 +1,4 @@
+[
+  { "model": "payment.payment", "pk": 1, "fields": { "booking": 1, "transaction_id": "TXN001", "amount": "500.00", "status": "SUCCESS" }},
+  { "model": "payment.payment", "pk": 2, "fields": { "booking": 2, "transaction_id": "TXN002", "amount": "500.00", "status": "PENDING" }}
+]
