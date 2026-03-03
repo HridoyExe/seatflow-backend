@@ -1,11 +1,15 @@
 from django.urls import path, include
-from rest_framework.routers import DefaultRouter
-from .views import CategoryViewSet, MenuItemViewSet
+from rest_framework_nested import routers
+from .views import CategoryViewSet, MenuItemViewSet, ReviewViewSet
 
-router = DefaultRouter()
-router.register(r"categories", CategoryViewSet)
-router.register(r"items", MenuItemViewSet)
+router = routers.DefaultRouter()
+router.register("categories", CategoryViewSet, basename="category")
+router.register("items", MenuItemViewSet, basename="menuitem")
+
+items_router = routers.NestedDefaultRouter(router, "items", lookup="item")
+items_router.register("reviews", ReviewViewSet, basename="item-reviews")
 
 urlpatterns = [
-    path("", include(router.urls)),
+    path("", include(router.urls)),        
+    path("", include(items_router.urls)),  
 ]

@@ -1,4 +1,5 @@
 from django.db import models
+from django.core.validators import MinValueValidator, MaxValueValidator
 from accounts.models import User
 
 
@@ -9,6 +10,7 @@ class Category(models.Model):
 
     class Meta:
         verbose_name_plural = "Categories"
+        ordering = ["name"]
 
     def __str__(self):
         return self.name
@@ -23,7 +25,12 @@ class MenuItem(models.Model):
 
     name = models.CharField(max_length=200)
     description = models.TextField()
-    price = models.DecimalField(max_digits=8, decimal_places=2)
+    price = models.DecimalField(
+        max_digits=8,
+        decimal_places=2,
+        validators=[MinValueValidator(0.01)],
+        help_text="Price of the item"
+    )
 
     image = models.ImageField(
         upload_to="menu_items/",
@@ -35,10 +42,13 @@ class MenuItem(models.Model):
     is_vegetarian = models.BooleanField(default=False)
     is_spicy = models.BooleanField(default=False)
     chef_choice = models.BooleanField(default=False)
-
     is_available = models.BooleanField(default=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+
 
     def __str__(self):
         return self.name
@@ -50,17 +60,28 @@ class Review(models.Model):
         on_delete=models.CASCADE,
         related_name="reviews"
     )
+
     menu_item = models.ForeignKey(
         MenuItem,
         on_delete=models.CASCADE,
         related_name="reviews"
     )
+
     rating = models.PositiveSmallIntegerField(
-        choices=[(i, str(i)) for i in range(1, 6)],
-        default=5
+        validators=[
+            MinValueValidator(1),
+            MaxValueValidator(5)
+        ],
+        default=5,
+        help_text="Rating from 1 to 5 stars"
     )
+
     comment = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ("user", "menu_item")
+        ordering = ["-created_at"]
 
     def __str__(self):
         return f"{self.user.email} - {self.menu_item.name} ({self.rating})"

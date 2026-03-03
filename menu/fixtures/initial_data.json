@@ -1,0 +1,510 @@
+[
+  {
+    "model": "accounts.user",
+    "pk": 1,
+    "fields": {
+      "password": "!unusable",
+      "email": "admin@seatflow.com",
+      "first_name": "Admin",
+      "last_name": "User",
+      "is_active": true,
+      "is_staff": true,
+      "is_superuser": true
+    }
+  },
+  {
+    "model": "menu.category",
+    "pk": 1,
+    "fields": {
+      "name": "Pizza",
+      "description": "All types of pizza",
+      "created_at": "2024-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "menu.category",
+    "pk": 2,
+    "fields": {
+      "name": "Burger",
+      "description": "Delicious burgers",
+      "created_at": "2024-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "menu.category",
+    "pk": 3,
+    "fields": {
+      "name": "Pasta",
+      "description": "Italian pasta",
+      "created_at": "2024-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "menu.category",
+    "pk": 4,
+    "fields": {
+      "name": "Drinks",
+      "description": "Cold and hot drinks",
+      "created_at": "2024-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "menu.category",
+    "pk": 5,
+    "fields": {
+      "name": "Dessert",
+      "description": "Sweet dishes",
+      "created_at": "2024-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "menu.menuitem",
+    "pk": 1,
+    "fields": {
+      "category": 1,
+      "name": "Pepperoni Pizza",
+      "description": "Classic pepperoni with mozzarella cheese",
+      "price": "899.99",
+      "image": null,
+      "is_special": true,
+      "is_vegetarian": false,
+      "is_spicy": false,
+      "chef_choice": true,
+      "is_available": true,
+      "created_at": "2024-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "menu.menuitem",
+    "pk": 2,
+    "fields": {
+      "category": 1,
+      "name": "Margherita Pizza",
+      "description": "Fresh tomato, basil and mozzarella",
+      "price": "749.99",
+      "image": null,
+      "is_special": false,
+      "is_vegetarian": true,
+      "is_spicy": false,
+      "chef_choice": false,
+      "is_available": true,
+      "created_at": "2024-01-02T00:00:00Z"
+    }
+  },
+  {
+    "model": "menu.menuitem",
+    "pk": 3,
+    "fields": {
+      "category": 1,
+      "name": "BBQ Chicken Pizza",
+      "description": "Smoky BBQ sauce with grilled chicken",
+      "price": "999.00",
+      "image": null,
+      "is_special": true,
+      "is_vegetarian": false,
+      "is_spicy": true,
+      "chef_choice": true,
+      "is_available": true,
+      "created_at": "2024-01-03T00:00:00Z"
+    }
+  },
+  {
+    "model": "menu.menuitem",
+    "pk": 4,
+    "fields": {
+      "category": 1,
+      "name": "Veggie Pizza",
+      "description": "Loaded with fresh vegetables",
+      "price": "650.00",
+      "image": null,
+      "is_special": false,
+      "is_vegetarian": true,
+      "is_spicy": false,
+      "chef_choice": false,
+      "is_available": true,
+      "created_at": "2024-01-04T00:00:00Z"
+    }
+  },
+  {
+    "model": "menu.menuitem",
+    "pk": 5,
+    "fields": {
+      "category": 2,
+      "name": "Beef Burger",
+      "description": "Juicy beef patty with fresh lettuce",
+      "price": "299.99",
+      "image": null,
+      "is_special": false,
+      "is_vegetarian": false,
+      "is_spicy": true,
+      "chef_choice": false,
+      "is_available": true,
+      "created_at": "2024-01-05T00:00:00Z"
+    }
+  },
+  {
+    "model": "menu.menuitem",
+    "pk": 6,
+    "fields": {
+      "category": 2,
+      "name": "Chicken Burger",
+      "description": "Crispy fried chicken with coleslaw",
+      "price": "249.99",
+      "image": null,
+      "is_special": false,
+      "is_vegetarian": false,
+      "is_spicy": false,
+      "chef_choice": true,
+      "is_available": true,
+      "created_at": "2024-01-06T00:00:00Z"
+    }
+  },
+  {
+    "model": "menu.menuitem",
+    "pk": 7,
+    "fields": {
+      "category": 2,
+      "name": "Double Smash Burger",
+      "description": "Double patty smash style burger",
+      "price": "399.99",
+      "image": null,
+      "is_special": true,
+      "is_vegetarian": false,
+      "is_spicy": true,
+      "chef_choice": true,
+      "is_available": true,
+      "created_at": "2024-01-07T00:00:00Z"
+    }
+  },
+  {
+    "model": "menu.menuitem",
+    "pk": 8,
+    "fields": {
+      "category": 2,
+      "name": "Veggie Burger",
+      "description": "Plant-based patty with avocado",
+      "price": "219.99",
+      "image": null,
+      "is_special": false,
+      "is_vegetarian": true,
+      "is_spicy": false,
+      "chef_choice": false,
+      "is_available": true,
+      "created_at": "2024-01-08T00:00:00Z"
+    }
+  },
+  {
+    "model": "menu.menuitem",
+    "pk": 9,
+    "fields": {
+      "category": 3,
+      "name": "Cream Pasta",
+      "description": "Rich alfredo cream sauce pasta",
+      "price": "450.00",
+      "image": null,
+      "is_special": false,
+      "is_vegetarian": true,
+      "is_spicy": false,
+      "chef_choice": true,
+      "is_available": true,
+      "created_at": "2024-01-09T00:00:00Z"
+    }
+  },
+  {
+    "model": "menu.menuitem",
+    "pk": 10,
+    "fields": {
+      "category": 3,
+      "name": "Bolognese Pasta",
+      "description": "Classic meat sauce with spaghetti",
+      "price": "499.00",
+      "image": null,
+      "is_special": false,
+      "is_vegetarian": false,
+      "is_spicy": false,
+      "chef_choice": false,
+      "is_available": true,
+      "created_at": "2024-01-10T00:00:00Z"
+    }
+  },
+  {
+    "model": "menu.menuitem",
+    "pk": 11,
+    "fields": {
+      "category": 3,
+      "name": "Pesto Pasta",
+      "description": "Basil pesto with pine nuts and parmesan",
+      "price": "420.00",
+      "image": null,
+      "is_special": true,
+      "is_vegetarian": true,
+      "is_spicy": false,
+      "chef_choice": false,
+      "is_available": true,
+      "created_at": "2024-01-11T00:00:00Z"
+    }
+  },
+  {
+    "model": "menu.menuitem",
+    "pk": 12,
+    "fields": {
+      "category": 4,
+      "name": "Cold Coffee",
+      "description": "Chilled coffee with milk foam",
+      "price": "150.00",
+      "image": null,
+      "is_special": false,
+      "is_vegetarian": true,
+      "is_spicy": false,
+      "chef_choice": false,
+      "is_available": true,
+      "created_at": "2024-01-12T00:00:00Z"
+    }
+  },
+  {
+    "model": "menu.menuitem",
+    "pk": 13,
+    "fields": {
+      "category": 4,
+      "name": "Lemonade",
+      "description": "Fresh squeezed lemon with mint",
+      "price": "99.00",
+      "image": null,
+      "is_special": false,
+      "is_vegetarian": true,
+      "is_spicy": false,
+      "chef_choice": false,
+      "is_available": true,
+      "created_at": "2024-01-13T00:00:00Z"
+    }
+  },
+  {
+    "model": "menu.menuitem",
+    "pk": 14,
+    "fields": {
+      "category": 4,
+      "name": "Mango Shake",
+      "description": "Thick fresh mango milkshake",
+      "price": "180.00",
+      "image": null,
+      "is_special": true,
+      "is_vegetarian": true,
+      "is_spicy": false,
+      "chef_choice": true,
+      "is_available": true,
+      "created_at": "2024-01-14T00:00:00Z"
+    }
+  },
+  {
+    "model": "menu.menuitem",
+    "pk": 15,
+    "fields": {
+      "category": 4,
+      "name": "Hot Cappuccino",
+      "description": "Espresso with steamed milk foam",
+      "price": "160.00",
+      "image": null,
+      "is_special": false,
+      "is_vegetarian": true,
+      "is_spicy": false,
+      "chef_choice": false,
+      "is_available": true,
+      "created_at": "2024-01-15T00:00:00Z"
+    }
+  },
+  {
+    "model": "menu.menuitem",
+    "pk": 16,
+    "fields": {
+      "category": 5,
+      "name": "Chocolate Cake",
+      "description": "Rich dark chocolate layer cake",
+      "price": "350.00",
+      "image": null,
+      "is_special": true,
+      "is_vegetarian": true,
+      "is_spicy": false,
+      "chef_choice": true,
+      "is_available": true,
+      "created_at": "2024-01-16T00:00:00Z"
+    }
+  },
+  {
+    "model": "menu.menuitem",
+    "pk": 17,
+    "fields": {
+      "category": 5,
+      "name": "Tiramisu",
+      "description": "Classic Italian coffee dessert",
+      "price": "280.00",
+      "image": null,
+      "is_special": false,
+      "is_vegetarian": true,
+      "is_spicy": false,
+      "chef_choice": true,
+      "is_available": true,
+      "created_at": "2024-01-17T00:00:00Z"
+    }
+  },
+  {
+    "model": "menu.menuitem",
+    "pk": 18,
+    "fields": {
+      "category": 5,
+      "name": "Cheesecake",
+      "description": "New York style cheesecake with berry topping",
+      "price": "320.00",
+      "image": null,
+      "is_special": false,
+      "is_vegetarian": true,
+      "is_spicy": false,
+      "chef_choice": false,
+      "is_available": true,
+      "created_at": "2024-01-18T00:00:00Z"
+    }
+  },
+  {
+    "model": "menu.menuitem",
+    "pk": 19,
+    "fields": {
+      "category": 5,
+      "name": "Ice Cream Sundae",
+      "description": "Vanilla ice cream with hot fudge",
+      "price": "199.00",
+      "image": null,
+      "is_special": false,
+      "is_vegetarian": true,
+      "is_spicy": false,
+      "chef_choice": false,
+      "is_available": true,
+      "created_at": "2024-01-19T00:00:00Z"
+    }
+  },
+  {
+    "model": "menu.menuitem",
+    "pk": 20,
+    "fields": {
+      "category": 1,
+      "name": "Spicy Chicken Pizza",
+      "description": "Spicy buffalo chicken with jalapenos",
+      "price": "849.00",
+      "image": null,
+      "is_special": false,
+      "is_vegetarian": false,
+      "is_spicy": true,
+      "chef_choice": false,
+      "is_available": false,
+      "created_at": "2024-01-20T00:00:00Z"
+    }
+  },
+  {
+    "model": "menu.review",
+    "pk": 1,
+    "fields": {
+      "user": 1,
+      "menu_item": 1,
+      "rating": 5,
+      "comment": "Excellent taste! Best pizza in town.",
+      "created_at": "2024-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "menu.review",
+    "pk": 2,
+    "fields": {
+      "user": 1,
+      "menu_item": 2,
+      "rating": 4,
+      "comment": "Very good, fresh ingredients",
+      "created_at": "2024-01-02T00:00:00Z"
+    }
+  },
+  {
+    "model": "menu.review",
+    "pk": 3,
+    "fields": {
+      "user": 1,
+      "menu_item": 9,
+      "rating": 3,
+      "comment": "Average taste, could be creamier",
+      "created_at": "2024-01-03T00:00:00Z"
+    }
+  },
+  {
+    "model": "menu.review",
+    "pk": 4,
+    "fields": {
+      "user": 1,
+      "menu_item": 12,
+      "rating": 5,
+      "comment": "Loved it! Refreshing cold coffee",
+      "created_at": "2024-01-04T00:00:00Z"
+    }
+  },
+  {
+    "model": "menu.review",
+    "pk": 5,
+    "fields": {
+      "user": 1,
+      "menu_item": 16,
+      "rating": 4,
+      "comment": "Tasty dessert, rich chocolate flavour",
+      "created_at": "2024-01-05T00:00:00Z"
+    }
+  },
+  {
+    "model": "menu.review",
+    "pk": 6,
+    "fields": {
+      "user": 1,
+      "menu_item": 5,
+      "rating": 5,
+      "comment": "Best burger I have had!",
+      "created_at": "2024-01-06T00:00:00Z"
+    }
+  },
+  {
+    "model": "menu.review",
+    "pk": 7,
+    "fields": {
+      "user": 1,
+      "menu_item": 7,
+      "rating": 5,
+      "comment": "Double smash is insane, highly recommend",
+      "created_at": "2024-01-07T00:00:00Z"
+    }
+  },
+  {
+    "model": "menu.review",
+    "pk": 8,
+    "fields": {
+      "user": 1,
+      "menu_item": 17,
+      "rating": 4,
+      "comment": "Tiramisu was delightful and not too sweet",
+      "created_at": "2024-01-08T00:00:00Z"
+    }
+  },
+  {
+    "model": "menu.review",
+    "pk": 9,
+    "fields": {
+      "user": 1,
+      "menu_item": 14,
+      "rating": 5,
+      "comment": "Mango shake was thick and fresh!",
+      "created_at": "2024-01-09T00:00:00Z"
+    }
+  },
+  {
+    "model": "menu.review",
+    "pk": 10,
+    "fields": {
+      "user": 1,
+      "menu_item": 3,
+      "rating": 4,
+      "comment": "BBQ chicken pizza was smoky and delicious",
+      "created_at": "2024-01-10T00:00:00Z"
+    }
+  }
+]
