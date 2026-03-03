@@ -10,6 +10,7 @@ class CustomUserAdmin(UserAdmin):
     list_display = (
         "email",
         "phone",
+        "role",
         "first_name",
         "last_name",
         "is_staff",
@@ -18,8 +19,7 @@ class CustomUserAdmin(UserAdmin):
     )
 
     search_fields = ("email", "phone", "first_name")
-
-    list_filter = ("is_staff", "is_active", "is_verified")
+    list_filter = ("role", "is_staff", "is_active", "is_verified") 
 
     ordering = ("email",)
 
@@ -32,6 +32,7 @@ class CustomUserAdmin(UserAdmin):
 
         ("Permissions", {
             "fields": (
+                "role",  # ✅ Added role
                 "is_active",
                 "is_staff",
                 "is_superuser",
@@ -49,6 +50,12 @@ class CustomUserAdmin(UserAdmin):
     add_fieldsets = (
         (None, {
             "classes": ("wide",),
-            "fields": ("email", "phone", "password1", "password2"),
+            "fields": (
+                "email",
+                "phone",
+                "password1",
+                "password2",
+                "role",  
+            ),
         }),
     )

@@ -1,6 +1,6 @@
 from rest_framework import viewsets
 from .models import User, OTP
-from .serializers import UserSerializer
+from .serializers import UserSerializer,UserCreateSerializer
 from django.contrib.auth import authenticate
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.views import APIView
@@ -10,6 +10,31 @@ from rest_framework.response import Response
 from rest_framework import status
 
 User = get_user_model()
+
+class RegisterView(APIView):
+    def post(self, request):
+        serializer = UserCreateSerializer(data=request.data)
+
+        if serializer.is_valid():
+            user = serializer.save()
+            if user.email:
+                OTP.objects.filter(user=user, is_used=False).delete()
+
+                otp = OTP.objects.create(user=user)
+
+                send_mail(
+                    subject="Verify Your Account",
+                    message=f"Your OTP is {otp.code}",
+                    from_email=None,
+                    recipient_list=[user.email],
+                )
+
+            return Response(
+                {"message": "User Created & OTP Sent"},
+                status=201
+            )
+
+        return Response(serializer.errors, status=400)
 
 class LoginView(APIView):
 

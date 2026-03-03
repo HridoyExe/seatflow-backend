@@ -19,7 +19,16 @@ class User(AbstractUser):
     )
 
     is_verified = models.BooleanField(default=False)
+    ROLE_CHOICES = (
+        ("ADMIN", "Admin"),
+        ("MEMBER", "Member"),
+    )
 
+    role = models.CharField(
+        max_length=20,
+        choices=ROLE_CHOICES,
+        default="MEMBER"
+    )
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = []
 
