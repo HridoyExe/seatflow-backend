@@ -1,21 +1,10 @@
 from rest_framework import serializers
-from .models import Category, MenuItem, Review
+from .models import Category, MenuItem, Review, MenuImage
 
-
-class CategorySerializer(serializers.ModelSerializer):
-    menu_count = serializers.IntegerField(read_only=True)
-
+class MenuImageSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Category
-        fields = [
-            "id",
-            "name",
-            "description",
-            "created_at",
-            "menu_count",
-        ]
-        read_only_fields = ["id", "created_at"]
-
+        model = MenuImage
+        fields = ['id', 'image']
 
 class MenuItemSerializer(serializers.ModelSerializer):
     category_name = serializers.CharField(
@@ -34,7 +23,6 @@ class MenuItemSerializer(serializers.ModelSerializer):
             "name",
             "description",
             "price",
-            "image",
             "is_special",
             "is_vegetarian",
             "is_spicy",
@@ -45,6 +33,23 @@ class MenuItemSerializer(serializers.ModelSerializer):
             "created_at",
         ]
         read_only_fields = ["id", "created_at"]
+
+class CategorySerializer(serializers.ModelSerializer):
+    menu_count = serializers.IntegerField(read_only=True)
+
+    class Meta:
+        model = Category
+        fields = [
+            "id",
+            "name",
+            "description",
+            "created_at",
+            "menu_count",
+        ]
+        read_only_fields = ["id", "created_at"]
+
+
+
 
 
 class ReviewSerializer(serializers.ModelSerializer):

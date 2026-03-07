@@ -5,7 +5,7 @@ from .views import SeatViewSet, BookingViewSet, OrderItemViewSet
 router = DefaultRouter()
 router.register(r"seats", SeatViewSet)
 router.register(r"bookings", BookingViewSet)
-router.register(r"order-items", OrderItemViewSet)  
+router.register(r"order-items", OrderItemViewSet, basename="orderitem")  
 
 urlpatterns = [
     path("", include(router.urls)),

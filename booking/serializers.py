@@ -36,6 +36,9 @@ class BookingSerializer(serializers.ModelSerializer):
             "phone",
             "email",
             "special_request",
+            "booking_date",
+            "start_time",
+            "end_time",
             "amount",
             "is_paid",
             "is_confirmed",
@@ -45,10 +48,24 @@ class BookingSerializer(serializers.ModelSerializer):
         extra_kwargs = {
             "booking_code": {"read_only": True},
             "user": {"read_only": True},
+            "amount": {"read_only": True},
             "is_paid": {"read_only": True},
             "is_confirmed": {"read_only": True},
             "created_at": {"read_only": True},
         }
+
+    def validate(self, attrs):
+        booking_date = attrs.get('booking_date')
+        start_time = attrs.get('start_time')
+        end_time = attrs.get('end_time')
+
+        if start_time and end_time and start_time >= end_time:
+            raise serializers.ValidationError({"end_time": "End time must be after start time."})
+
+        # Example validation for future dates, skipped for simplicity if we allow same day.
+        # However, ensuring date is not empty if required can be done here.
+        
+        return attrs
 
     def create(self, validated_data):
         validated_data["booking_code"] = "BOOK-" + get_random_string(6).upper()

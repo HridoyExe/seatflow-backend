@@ -1,8 +1,8 @@
 from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
 from accounts.models import User
+from .validators import validate_image
 from decimal import Decimal
-
 class Category(models.Model):
     name = models.CharField(max_length=100, unique=True)
     description = models.TextField(blank=True)
@@ -31,13 +31,6 @@ class MenuItem(models.Model):
     validators=[MinValueValidator(Decimal("0.01"))],
     help_text="Price of the item"
 )
-
-    image = models.ImageField(
-        upload_to="menu_items/",
-        null=True,
-        blank=True
-    )
-
     is_special = models.BooleanField(default=False)
     is_vegetarian = models.BooleanField(default=False)
     is_spicy = models.BooleanField(default=False)
@@ -52,7 +45,15 @@ class MenuItem(models.Model):
 
     def __str__(self):
         return self.name
-
+    
+class MenuImage(models.Model):
+    menu = models.ForeignKey(MenuItem, on_delete=models.CASCADE,related_name="images")
+    image = models.ImageField(
+        upload_to="menu_items/",
+        validators=[validate_image],
+        null=True,
+        blank=True
+    )
 
 class Review(models.Model):
     user = models.ForeignKey(
