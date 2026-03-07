@@ -57,7 +57,6 @@ class Booking(models.Model):
 
     class Meta:
         ordering = ["-created_at"]
-        unique_together = ("seat", "created_at")
 
     def __str__(self):
         return self.booking_code
