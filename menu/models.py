@@ -3,6 +3,8 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 from accounts.models import User
 from .validators import validate_image
 from decimal import Decimal
+from cloudinary.models import CloudinaryField
+
 class Category(models.Model):
     name = models.CharField(max_length=100, unique=True)
     description = models.TextField(blank=True)
@@ -45,16 +47,12 @@ class MenuItem(models.Model):
 
     def __str__(self):
         return self.name
-    
 class MenuImage(models.Model):
-    menu = models.ForeignKey(MenuItem, on_delete=models.CASCADE,related_name="images")
-    image = models.ImageField(
-        upload_to="menu_items/",
-        validators=[validate_image],
-        null=True,
-        blank=True
-    )
+    menu = models.ForeignKey(MenuItem, on_delete=models.CASCADE, related_name="images")
+    image = CloudinaryField('image', null=True, blank=True)
 
+    class Meta:
+        ordering = ["-id"]
 class Review(models.Model):
     user = models.ForeignKey(
         User,

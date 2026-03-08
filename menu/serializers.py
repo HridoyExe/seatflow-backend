@@ -2,6 +2,7 @@ from rest_framework import serializers
 from .models import Category, MenuItem, Review, MenuImage
 
 class MenuImageSerializer(serializers.ModelSerializer):
+    image = serializers.ImageField()
     class Meta:
         model = MenuImage
         fields = ['id', 'image']

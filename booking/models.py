@@ -11,7 +11,6 @@ class Section(models.Model):
     def __str__(self):
         return self.name
 
-
 class Seat(models.Model):
     section = models.ForeignKey(
         Section,
@@ -24,9 +23,11 @@ class Seat(models.Model):
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
+    class Meta:
+        ordering = ["seat_number"] 
+
     def __str__(self):
         return f"{self.seat_number} ({self.section.name if self.section else 'No Section'})"
-
 
 class Booking(models.Model):
     user = models.ForeignKey(

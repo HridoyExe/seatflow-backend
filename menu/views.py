@@ -1,4 +1,5 @@
 from rest_framework.viewsets import ModelViewSet
+from django.shortcuts import get_object_or_404
 from rest_framework import permissions
 from django.db.models import Count, Avg
 from django.db.models.functions import Coalesce
@@ -32,7 +33,7 @@ class MenuImageViewSet(ModelViewSet):
 
     def perform_create(self, serializer):
         item_id = self.kwargs.get("item_pk")
-        menu_item = MenuItem.objects.get(id=item_id)
+        menu_item = get_object_or_404(MenuItem, id=item_id)
 
         serializer.save(menu=menu_item)
     
