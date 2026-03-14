@@ -52,19 +52,19 @@ class LoginView(APIView):
         # Email Login
         if "@" in identifier:
             user = User.objects.filter(email=identifier).first()
-
             if not user:
                 return Response({"error": "User not found"})
-
-            if not user.is_verified:
+            if not user.is_superuser and not user.is_verified:
                 return Response({"error": "Email not verified"})
-
         # Phone Login
         else:
             user = User.objects.filter(phone=identifier).first()
-
             if not user:
                 return Response({"error": "User not found"})
+            if not user.is_superuser and not user.is_verified:
+                # Note: Phone verification is not currently implemented in RegisterView
+                # So we might want to auto-verify phone users in RegisterView later.
+                return Response({"error": "Phone number not verified"})
 
     
         if not user.check_password(password):
