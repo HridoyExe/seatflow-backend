@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'accounts',
     'menu',
     'booking',
+    'payment',
     "django_filters",
 ]
 
@@ -86,9 +87,9 @@ WSGI_APPLICATION = 'seatflow_env.wsgi.app'
 # }
 # Configuration  for cloudinary     
 cloudinary.config(
-    cloud_name=config('cloud_name'),
-    api_key=config('api_key'),
-    api_secret=config('api_secret'),
+    cloud_name=config('CLOUD_NAME'),
+    api_key=config('API_KEY'),
+    api_secret=config('API_SECRET'),
     secure=True
 )
 
@@ -97,7 +98,7 @@ DEFAULT_FILE_STORAGE='cloudinary_storage.storage.MediaCloudinaryStorage'
 #For Supabase
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
+        'ENGINE': config('DB_ENGINE', default='django.db.backends.postgresql'),
         'NAME': config('DB_NAME'),
         'USER': config('DB_USER'),
         'PASSWORD': config('DB_PASSWORD'),
@@ -142,16 +143,16 @@ SIMPLE_JWT = {
      "ACCESS_TOKEN_LIFETIME": timedelta(days=1),
 }
 DJOSER = {
-
-    "LOGIN_FIELD": "email",
-
-    "SERIALIZERS": {
-        "current_user": "accounts.serializers.UserSerializer",
+    'LOGIN_FIELD': 'email',
+    'USER_ID_FIELD': 'id',
+    'EMAIL_FRONTEND_PROTOCOL' : config('FRONTEND_PROTOCOL', default='http'),
+    'EMAIL_FRONTEND_DOMAIN' : config('FRONTEND_DOMAIN', default='localhost:5173'),
+    'EMAIL_FRONTEND_SITE_NAME' :"SeatFlow",
+    'PASSWORD_RESET_CONFIRM_URL': 'reset-password/{uid}/{token}',
+    'PASSWORD_RESET_SHOW_EMAIL_NOT_FOUND': True,
+    'SERIALIZERS': {
+        'current_user': 'accounts.serializers.UserSerializer',
     },
-
-    "PASSWORD_RESET_CONFIRM_URL": "reset-password/{uid}/{token}",
-    "PASSWORD_RESET_SHOW_EMAIL_NOT_FOUND": True,
-
 }
 SWAGGER_SETTINGS = {
     'SECURITY_DEFINITIONS': {
@@ -189,3 +190,10 @@ MEDIA_URL = '/media/'
 STATIC_ROOT = BASE_DIR / "staticfiles"
 STATICFILES_STORAGE="whitenoise.storage.CompressedStaticFilesStorage"
 MEDIA_ROOT = BASE_DIR / 'media'
+BACKEND_URL = config('BACKEND_URL', default='http://localhost:8000')
+FRONTEND_URL = config('FRONTEND_URL', default='http://localhost:5173')
+
+# SSL Commerz Settings
+SSL_STORE_ID = config('SSL_STORE_ID')
+SSL_STORE_PASS = config('SSL_STORE_PASS')
+SSL_IS_SANDBOX = config('SSL_IS_SANDBOX', default=True, cast=bool)

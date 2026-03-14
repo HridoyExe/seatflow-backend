@@ -1,14 +1,13 @@
-from rest_framework import viewsets
-from .models import User, OTP
-from .serializers import UserSerializer,UserCreateSerializer
-from django.contrib.auth import authenticate
-from rest_framework_simplejwt.tokens import RefreshToken
-from rest_framework.views import APIView
-from django.core.mail import send_mail
-from django.contrib.auth import get_user_model
+from rest_framework import viewsets, status
 from rest_framework.response import Response
-from rest_framework import status
-from rest_framework.permissions import IsAdminUser
+from rest_framework.views import APIView
+from rest_framework.decorators import action
+from rest_framework.permissions import IsAuthenticated, IsAdminUser
+from django.contrib.auth import authenticate, get_user_model
+from django.core.mail import send_mail
+from rest_framework_simplejwt.tokens import RefreshToken
+from .models import User, OTP
+from .serializers import UserSerializer, UserCreateSerializer
 
 User = get_user_model()
 
@@ -163,7 +162,8 @@ class VerifyOtpView(APIView):
             {"message": "Email verified successfully"},
             status=status.HTTP_200_OK
         )
+
 class UserViewSet(viewsets.ModelViewSet):
-    permission_classes = [IsAdminUser]
     queryset = User.objects.all()
     serializer_class = UserSerializer
+    permission_classes = [IsAdminUser]
