@@ -87,9 +87,9 @@ WSGI_APPLICATION = 'seatflow_env.wsgi.app'
 # }
 # Configuration  for cloudinary     
 cloudinary.config(
-    cloud_name=config('CLOUD_NAME'),
-    api_key=config('API_KEY'),
-    api_secret=config('API_SECRET'),
+    cloud_name=config('CLOUD_NAME', default=''),
+    api_key=config('API_KEY', default=''),
+    api_secret=config('API_SECRET', default=''),
     secure=True
 )
 
@@ -99,11 +99,11 @@ DEFAULT_FILE_STORAGE='cloudinary_storage.storage.MediaCloudinaryStorage'
 DATABASES = {
     'default': {
         'ENGINE': config('DB_ENGINE', default='django.db.backends.postgresql'),
-        'NAME': config('DB_NAME'),
-        'USER': config('DB_USER'),
-        'PASSWORD': config('DB_PASSWORD'),
-        'HOST': config('DB_HOST'),
-        'PORT': config('DB_PORT'),
+        'NAME': config('DB_NAME', default=''),
+        'USER': config('DB_USER', default=''),
+        'PASSWORD': config('DB_PASSWORD', default=''),
+        'HOST': config('DB_HOST', default=''),
+        'PORT': config('DB_PORT', default=''),
     }
 }
 
@@ -205,6 +205,6 @@ BACKEND_URL = config('BACKEND_URL', default='http://localhost:8000')
 FRONTEND_URL = config('FRONTEND_URL', default='http://localhost:5173')
 
 # SSL Commerz Settings
-SSL_STORE_ID = config('SSL_STORE_ID')
-SSL_STORE_PASS = config('SSL_STORE_PASS')
+SSL_STORE_ID = config('SSL_STORE_ID', default='')
+SSL_STORE_PASS = config('SSL_STORE_PASS', default='')
 SSL_IS_SANDBOX = config('SSL_IS_SANDBOX', default=True, cast=bool)
