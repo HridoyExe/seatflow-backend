@@ -4,7 +4,7 @@ from djoser.serializers import UserCreateSerializer as BaseUserSerializer
 
 User = get_user_model()
 
-class UserCreateSerializer(BaseUserSerializer):
+class AccountUserCreateSerializer(BaseUserSerializer):
     class Meta(BaseUserSerializer.Meta):
         fields = ["id", "email", "password", "first_name", "last_name", "phone", "profile_image"]
 
@@ -15,7 +15,7 @@ class UserCreateSerializer(BaseUserSerializer):
         return super().to_internal_value(data)
 
 
-class UserSerializer(serializers.ModelSerializer):
+class AccountUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ["id", "email", "first_name", "last_name", "phone", "address", "profile_image", "role", "is_verified"]

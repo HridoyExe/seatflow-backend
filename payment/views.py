@@ -4,10 +4,31 @@ from django.views.decorators.csrf import csrf_exempt
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from drf_spectacular.utils import extend_schema, inline_serializer
+from drf_spectacular.types import OpenApiTypes
+from rest_framework import serializers
 from sslcommerz_lib import SSLCOMMERZ
 from .models import Payment
 from booking.models import Booking
 
+@extend_schema(
+    request=inline_serializer(
+        name='InitiatePaymentRequest',
+        fields={
+            'amount': serializers.FloatField(required=False),
+            'orderId': serializers.IntegerField(),
+            'numItems': serializers.IntegerField(default=1),
+        }
+    ),
+    responses={
+        200: inline_serializer(
+            name='InitiatePaymentResponse',
+            fields={'payment_url': serializers.URLField()}
+        ),
+        400: OpenApiTypes.OBJECT,
+        404: OpenApiTypes.OBJECT,
+    }
+)
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def initiate_payment(request):
@@ -80,6 +101,13 @@ def initiate_payment(request):
             "error": response
         }, status=400)
 
+@extend_schema(
+    request=inline_serializer(
+        name='PaymentCallbackRequest',
+        fields={'tran_id': serializers.CharField()}
+    ),
+    responses={302: None, 404: OpenApiTypes.OBJECT}
+)
 @csrf_exempt
 @api_view(['POST'])
 def payment_success(request):
@@ -102,6 +130,13 @@ def payment_success(request):
     except Payment.DoesNotExist:
         return Response({"error": "Payment record not found"}, status=404)
 
+@extend_schema(
+    request=inline_serializer(
+        name='PaymentCallbackRequestFail', # Changed name to avoid duplicate in schema if needed, but spectacular might handle it.
+        fields={'tran_id': serializers.CharField()}
+    ),
+    responses={302: None, 404: OpenApiTypes.OBJECT}
+)
 @csrf_exempt
 @api_view(['POST'])
 def payment_fail(request):
@@ -116,6 +151,13 @@ def payment_fail(request):
     except Payment.DoesNotExist:
         return Response({"error": "Payment record not found"}, status=404)
 
+@extend_schema(
+    request=inline_serializer(
+        name='PaymentCallbackRequestCancel',
+        fields={'tran_id': serializers.CharField()}
+    ),
+    responses={302: None, 404: OpenApiTypes.OBJECT}
+)
 @csrf_exempt
 @api_view(['POST'])
 def payment_cancel(request):

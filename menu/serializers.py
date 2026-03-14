@@ -79,7 +79,7 @@ class ReviewSerializer(serializers.ModelSerializer):
         ]
         read_only_fields = ["id", "user", "created_at"]
 
-    def get_rating_text(self, obj):
+    def get_rating_text(self, obj) -> str:
         rating_map = {
             5: "Excellent",
             4: "Very Good",

@@ -1,19 +1,31 @@
-from rest_framework import viewsets, status
+from rest_framework import viewsets, status, serializers
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from django.contrib.auth import authenticate, get_user_model
+from drf_spectacular.utils import extend_schema, inline_serializer
+from drf_spectacular.types import OpenApiTypes
 from django.core.mail import send_mail
 from rest_framework_simplejwt.tokens import RefreshToken
 from .models import User, OTP
-from .serializers import UserSerializer, UserCreateSerializer
+from .serializers import AccountUserSerializer, AccountUserCreateSerializer
 
 User = get_user_model()
 
 class RegisterView(APIView):
+    @extend_schema(
+        request=AccountUserCreateSerializer,
+        responses={
+            201: inline_serializer(
+                name='RegisterSuccessResponse',
+                fields={'message': serializers.CharField()}
+            ),
+            400: OpenApiTypes.OBJECT,
+        }
+    )
     def post(self, request):
-        serializer = UserCreateSerializer(data=request.data)
+        serializer = AccountUserCreateSerializer(data=request.data)
 
         if serializer.is_valid():
             user = serializer.save()
@@ -38,6 +50,25 @@ class RegisterView(APIView):
 
 class LoginView(APIView):
 
+    @extend_schema(
+        request=inline_serializer(
+            name='LoginRequest',
+            fields={
+                'identifier': serializers.CharField(),
+                'password': serializers.CharField(),
+            }
+        ),
+        responses={
+            200: inline_serializer(
+                name='LoginResponse',
+                fields={
+                    'access': serializers.CharField(),
+                    'refresh': serializers.CharField(),
+                }
+            ),
+            400: OpenApiTypes.OBJECT,
+        }
+    )
     def post(self, request):
         identifier = request.data.get("identifier")
         password = request.data.get("password")
@@ -77,6 +108,20 @@ class LoginView(APIView):
         })
 class SendOTpView(APIView):
 
+    @extend_schema(
+        request=inline_serializer(
+            name='SendOtpRequest',
+            fields={'email': serializers.EmailField()}
+        ),
+        responses={
+            200: inline_serializer(
+                name='SendOtpResponse',
+                fields={'message': serializers.CharField()}
+            ),
+            400: OpenApiTypes.OBJECT,
+            404: OpenApiTypes.OBJECT,
+        }
+    )
     def post(self, request):
         email = request.data.get("email")
 
@@ -116,6 +161,23 @@ class SendOTpView(APIView):
 
 class VerifyOtpView(APIView):
 
+    @extend_schema(
+        request=inline_serializer(
+            name='VerifyOtpRequest',
+            fields={
+                'email': serializers.EmailField(),
+                'code': serializers.CharField(),
+            }
+        ),
+        responses={
+            200: inline_serializer(
+                name='VerifyOtpResponse',
+                fields={'message': serializers.CharField()}
+            ),
+            400: OpenApiTypes.OBJECT,
+            404: OpenApiTypes.OBJECT,
+        }
+    )
     def post(self, request):
         email = request.data.get("email")
         code = request.data.get("code")
@@ -165,5 +227,5 @@ class VerifyOtpView(APIView):
 
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
-    serializer_class = UserSerializer
+    serializer_class = AccountUserSerializer
     permission_classes = [IsAdminUser]

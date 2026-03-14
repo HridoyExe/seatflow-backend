@@ -9,28 +9,31 @@ from .serializers import (
     BookingSerializer,
     OrderItemSerializer,
 )
-from drf_yasg.utils import swagger_auto_schema
-from drf_yasg import openapi
+from drf_spectacular.utils import extend_schema, extend_schema_view, OpenApiParameter, OpenApiTypes
 from django.utils.decorators import method_decorator
 
-@method_decorator(name='list', decorator=swagger_auto_schema(operation_description="List all sections"))
-@method_decorator(name='create', decorator=swagger_auto_schema(operation_description="Create a new section (Admin only)"))
-@method_decorator(name='retrieve', decorator=swagger_auto_schema(operation_description="Get section details"))
-@method_decorator(name='update', decorator=swagger_auto_schema(operation_description="Update a section (Admin only)"))
-@method_decorator(name='partial_update', decorator=swagger_auto_schema(operation_description="Partially update a section (Admin only)"))
-@method_decorator(name='destroy', decorator=swagger_auto_schema(operation_description="Delete a section (Admin only)"))
+@extend_schema_view(
+    list=extend_schema(description="List all sections"),
+    create=extend_schema(description="Create a new section (Admin only)"),
+    retrieve=extend_schema(description="Get section details"),
+    update=extend_schema(description="Update a section (Admin only)"),
+    partial_update=extend_schema(description="Partially update a section (Admin only)"),
+    destroy=extend_schema(description="Delete a section (Admin only)"),
+)
 class SectionViewSet(ModelViewSet):
     permission_classes = [IsAdminOrReadOnly]
     queryset = Section.objects.all()
     serializer_class = SectionSerializer
 
 
-@method_decorator(name='list', decorator=swagger_auto_schema(operation_description="List all seats"))
-@method_decorator(name='create', decorator=swagger_auto_schema(operation_description="Create a new seat (Admin only)"))
-@method_decorator(name='retrieve', decorator=swagger_auto_schema(operation_description="Get seat details"))
-@method_decorator(name='update', decorator=swagger_auto_schema(operation_description="Update a seat (Admin only)"))
-@method_decorator(name='partial_update', decorator=swagger_auto_schema(operation_description="Partially update a seat (Admin only)"))
-@method_decorator(name='destroy', decorator=swagger_auto_schema(operation_description="Delete a seat (Admin only)"))
+@extend_schema_view(
+    list=extend_schema(description="List all seats"),
+    create=extend_schema(description="Create a new seat (Admin only)"),
+    retrieve=extend_schema(description="Get seat details"),
+    update=extend_schema(description="Update a seat (Admin only)"),
+    partial_update=extend_schema(description="Partially update a seat (Admin only)"),
+    destroy=extend_schema(description="Delete a seat (Admin only)"),
+)
 class SeatViewSet(ModelViewSet):
     permission_classes = [IsAdminOrReadOnly]
     queryset = Seat.objects.all()
@@ -59,12 +62,14 @@ class SeatViewSet(ModelViewSet):
 
         instance.delete()
 
-@method_decorator(name='list', decorator=swagger_auto_schema(operation_description="List all bookings for the currently authenticated user"))
-@method_decorator(name='create', decorator=swagger_auto_schema(operation_description="Create a new booking. Maximum 4 paid bookings per user."))
-@method_decorator(name='retrieve', decorator=swagger_auto_schema(operation_description="Get booking details"))
-@method_decorator(name='update', decorator=swagger_auto_schema(operation_description="Update a booking. Cannot update if already paid."))
-@method_decorator(name='partial_update', decorator=swagger_auto_schema(operation_description="Partially update a booking. Cannot update if already paid."))
-@method_decorator(name='destroy', decorator=swagger_auto_schema(operation_description="Cancel/Delete a booking"))
+@extend_schema_view(
+    list=extend_schema(description="List all bookings for the currently authenticated user"),
+    create=extend_schema(description="Create a new booking. Maximum 4 paid bookings per user."),
+    retrieve=extend_schema(description="Get booking details"),
+    update=extend_schema(description="Update a booking. Cannot update if already paid."),
+    partial_update=extend_schema(description="Partially update a booking. Cannot update if already paid."),
+    destroy=extend_schema(description="Cancel/Delete a booking"),
+)
 class BookingViewSet(ModelViewSet):
     serializer_class = BookingSerializer
     permission_classes = [IsAuthenticatedUser]
@@ -118,20 +123,22 @@ class BookingViewSet(ModelViewSet):
             )
         instance.delete()
 
-@method_decorator(name='retrieve', decorator=swagger_auto_schema(operation_description="Get order item details"))
-@method_decorator(name='create', decorator=swagger_auto_schema(operation_description="Add a new item to an existing booking. Can only add to own bookings."))
+@extend_schema_view(
+    retrieve=extend_schema(description="Get order item details"),
+    create=extend_schema(description="Add a new item to an existing booking. Can only add to own bookings."),
+)
 class OrderItemViewSet(ModelViewSet):
     serializer_class = OrderItemSerializer
     permission_classes = [IsAuthenticatedUser]
 
-    @swagger_auto_schema(
-        operation_description="List all order items for the currently authenticated user",
-        manual_parameters=[
-            openapi.Parameter(
-                'booking', 
-                openapi.IN_QUERY, 
+    @extend_schema(
+        description="List all order items for the currently authenticated user",
+        parameters=[
+            OpenApiParameter(
+                name='booking', 
+                location=OpenApiParameter.QUERY, 
                 description="Filter items by a specific booking ID", 
-                type=openapi.TYPE_INTEGER
+                type=OpenApiTypes.INT
             )
         ]
     )

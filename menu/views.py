@@ -14,15 +14,35 @@ from .serializers import (
 )
 from .permissions import IsAdminOrReadOnly, IsOwnerOrAdmin
 from .filters import MenuItemFilter
-from drf_yasg.utils import swagger_auto_schema
-from drf_yasg import openapi
+from drf_spectacular.utils import extend_schema, extend_schema_view, OpenApiParameter
+from drf_spectacular.types import OpenApiTypes
 from django.utils.decorators import method_decorator
-@method_decorator(name='list', decorator=swagger_auto_schema(operation_description="List all images for a specific menu item"))
-@method_decorator(name='create', decorator=swagger_auto_schema(operation_description="Upload a new image for a menu item (Admin only)"))
-@method_decorator(name='retrieve', decorator=swagger_auto_schema(operation_description="Get details of a specific menu image"))
-@method_decorator(name='update', decorator=swagger_auto_schema(operation_description="Update a menu image (Admin only)"))
-@method_decorator(name='partial_update', decorator=swagger_auto_schema(operation_description="Partially update a menu image (Admin only)"))
-@method_decorator(name='destroy', decorator=swagger_auto_schema(operation_description="Delete a menu image (Admin only)"))
+@extend_schema_view(
+    list=extend_schema(
+        description="List all images for a specific menu item",
+        parameters=[OpenApiParameter("item_pk", OpenApiTypes.INT, location=OpenApiParameter.PATH)]
+    ),
+    create=extend_schema(
+        description="Upload a new image for a menu item (Admin only)",
+        parameters=[OpenApiParameter("item_pk", OpenApiTypes.INT, location=OpenApiParameter.PATH)]
+    ),
+    retrieve=extend_schema(
+        description="Get details of a specific menu image",
+        parameters=[OpenApiParameter("item_pk", OpenApiTypes.INT, location=OpenApiParameter.PATH)]
+    ),
+    update=extend_schema(
+        description="Update a menu image (Admin only)",
+        parameters=[OpenApiParameter("item_pk", OpenApiTypes.INT, location=OpenApiParameter.PATH)]
+    ),
+    partial_update=extend_schema(
+        description="Partially update a menu image (Admin only)",
+        parameters=[OpenApiParameter("item_pk", OpenApiTypes.INT, location=OpenApiParameter.PATH)]
+    ),
+    destroy=extend_schema(
+        description="Delete a menu image (Admin only)",
+        parameters=[OpenApiParameter("item_pk", OpenApiTypes.INT, location=OpenApiParameter.PATH)]
+    ),
+)
 class MenuImageViewSet(ModelViewSet):
     queryset = MenuImage.objects.all()
     serializer_class = MenuImageSerializer
@@ -37,12 +57,14 @@ class MenuImageViewSet(ModelViewSet):
 
         serializer.save(menu=menu_item)
     
-@method_decorator(name='list', decorator=swagger_auto_schema(operation_description="List all menu categories with their item counts"))
-@method_decorator(name='create', decorator=swagger_auto_schema(operation_description="Create a new menu category (Admin only)"))
-@method_decorator(name='retrieve', decorator=swagger_auto_schema(operation_description="Get details of a specific category"))
-@method_decorator(name='update', decorator=swagger_auto_schema(operation_description="Update a category (Admin only)"))
-@method_decorator(name='partial_update', decorator=swagger_auto_schema(operation_description="Partially update a category (Admin only)"))
-@method_decorator(name='destroy', decorator=swagger_auto_schema(operation_description="Delete a category (Admin only)"))
+@extend_schema_view(
+    list=extend_schema(description="List all menu categories with their item counts"),
+    create=extend_schema(description="Create a new menu category (Admin only)"),
+    retrieve=extend_schema(description="Get details of a specific category"),
+    update=extend_schema(description="Update a category (Admin only)"),
+    partial_update=extend_schema(description="Partially update a category (Admin only)"),
+    destroy=extend_schema(description="Delete a category (Admin only)"),
+)
 class CategoryViewSet(ModelViewSet):
     serializer_class = CategorySerializer
     permission_classes = [IsAdminOrReadOnly]
@@ -56,12 +78,14 @@ class CategoryViewSet(ModelViewSet):
             .order_by("name")
         )
 
-@method_decorator(name='list', decorator=swagger_auto_schema(operation_description="List all menu items with filtering, searching, and ordering options"))
-@method_decorator(name='create', decorator=swagger_auto_schema(operation_description="Create a new menu item (Admin only)"))
-@method_decorator(name='retrieve', decorator=swagger_auto_schema(operation_description="Get details of a specific menu item, including its reviews and average rating"))
-@method_decorator(name='update', decorator=swagger_auto_schema(operation_description="Update a menu item (Admin only)"))
-@method_decorator(name='partial_update', decorator=swagger_auto_schema(operation_description="Partially update a menu item (Admin only)"))
-@method_decorator(name='destroy', decorator=swagger_auto_schema(operation_description="Delete a menu item (Admin only)"))
+@extend_schema_view(
+    list=extend_schema(description="List all menu items with filtering, searching, and ordering options"),
+    create=extend_schema(description="Create a new menu item (Admin only)"),
+    retrieve=extend_schema(description="Get details of a specific menu item, including its reviews and average rating"),
+    update=extend_schema(description="Update a menu item (Admin only)"),
+    partial_update=extend_schema(description="Partially update a menu item (Admin only)"),
+    destroy=extend_schema(description="Delete a menu item (Admin only)"),
+)
 class MenuItemViewSet(ModelViewSet):
     serializer_class = MenuItemSerializer
     permission_classes = [IsAdminOrReadOnly]
@@ -91,12 +115,32 @@ class MenuItemViewSet(ModelViewSet):
             .order_by("-created_at")
         )
 
-@method_decorator(name='list', decorator=swagger_auto_schema(operation_description="List all reviews"))
-@method_decorator(name='create', decorator=swagger_auto_schema(operation_description="Create a new review for a menu item"))
-@method_decorator(name='retrieve', decorator=swagger_auto_schema(operation_description="Get details of a specific review"))
-@method_decorator(name='update', decorator=swagger_auto_schema(operation_description="Update a review (Owner or Admin only)"))
-@method_decorator(name='partial_update', decorator=swagger_auto_schema(operation_description="Partially update a review (Owner or Admin only)"))
-@method_decorator(name='destroy', decorator=swagger_auto_schema(operation_description="Delete a review (Owner or Admin only)"))
+@extend_schema_view(
+    list=extend_schema(
+        description="List all reviews",
+        parameters=[OpenApiParameter("item_pk", OpenApiTypes.INT, location=OpenApiParameter.PATH)]
+    ),
+    create=extend_schema(
+        description="Create a new review for a menu item",
+        parameters=[OpenApiParameter("item_pk", OpenApiTypes.INT, location=OpenApiParameter.PATH)]
+    ),
+    retrieve=extend_schema(
+        description="Get details of a specific review",
+        parameters=[OpenApiParameter("item_pk", OpenApiTypes.INT, location=OpenApiParameter.PATH)]
+    ),
+    update=extend_schema(
+        description="Update a review (Owner or Admin only)",
+        parameters=[OpenApiParameter("item_pk", OpenApiTypes.INT, location=OpenApiParameter.PATH)]
+    ),
+    partial_update=extend_schema(
+        description="Partially update a review (Owner or Admin only)",
+        parameters=[OpenApiParameter("item_pk", OpenApiTypes.INT, location=OpenApiParameter.PATH)]
+    ),
+    destroy=extend_schema(
+        description="Delete a review (Owner or Admin only)",
+        parameters=[OpenApiParameter("item_pk", OpenApiTypes.INT, location=OpenApiParameter.PATH)]
+    ),
+)
 class ReviewViewSet(ModelViewSet):
     serializer_class = ReviewSerializer
     permission_classes = [IsOwnerOrAdmin]

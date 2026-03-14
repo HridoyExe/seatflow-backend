@@ -32,7 +32,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'drf_yasg',
+    'drf_spectacular',
     "phonenumber_field",
     'rest_framework',
     'djoser',
@@ -124,6 +124,8 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
 REST_FRAMEWORK = {
     "DEFAULT_FILTER_BACKENDS": [
         "django_filters.rest_framework.DjangoFilterBackend",
@@ -135,7 +137,16 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
-    
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+}
+
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'SeatFlow API',
+    'DESCRIPTION': 'API documentation for SeatFlow project',
+    'VERSION': '1.0.0',
+    'SERVE_INCLUDE_SCHEMA': False,
+    'COMPONENT_SPLIT_PATCH': True,
+    'COMPONENT_PATH_EXTRACT_NAMES': True,
 }
 
 SIMPLE_JWT = {
@@ -151,7 +162,7 @@ DJOSER = {
     'PASSWORD_RESET_CONFIRM_URL': 'reset-password/{uid}/{token}',
     'PASSWORD_RESET_SHOW_EMAIL_NOT_FOUND': True,
     'SERIALIZERS': {
-        'current_user': 'accounts.serializers.UserSerializer',
+        'current_user': 'accounts.serializers.AccountUserSerializer',
     },
 }
 SWAGGER_SETTINGS = {
