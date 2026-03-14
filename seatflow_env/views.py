@@ -4,9 +4,12 @@ from rest_framework.reverse import reverse
 
 @api_view(['GET'])
 def api_root_view(request, format=None):
-    return Response({
-        'menu-categories': reverse('category-list', request=request, format=format),
-        'menu-items': reverse('menuitem-list', request=request, format=format),
-        'seats': reverse('seat-list', request=request, format=format),
-        'bookings': reverse('booking-list', request=request, format=format),
-    })
+    data = {}
+    try:
+        data['menu-categories'] = reverse('category-list', request=request, format=format)
+        data['menu-items'] = reverse('menuitem-list', request=request, format=format)
+        data['seats'] = reverse('seat-list', request=request, format=format)
+        data['bookings'] = reverse('booking-list', request=request, format=format)
+    except:
+        pass
+    return Response(data)
