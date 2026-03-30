@@ -16,25 +16,24 @@ SECRET_KEY = 'django-insecure-2yw+7imm$cg4j8q6n7v1!=5zq79je+3whd#l9#_+%=clj+acqz
 
 # SECURITY WARNING: don't run with debug turned on in production!
 CORS_ALLOW_ALL_ORIGINS = True
-DEBUG = False
+DEBUG = True
 AUTH_USER_MODEL = 'accounts.User'
 ALLOWED_HOSTS = ["localhost",".vercel.app",'127.0.0.1']
 
 
 # Application definition
 
-
 INSTALLED_APPS = [
     "corsheaders",
     "whitenoise.runserver_nostatic",
+    "cloudinary_storage",
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'cloudinary_storage',
-    'cloudinary',
+    "cloudinary",
     'drf_spectacular',
     "phonenumber_field",
     'rest_framework',
@@ -96,8 +95,22 @@ cloudinary.config(
     secure=True
 )
 
-#Media Storage Setting
-DEFAULT_FILE_STORAGE='cloudinary_storage.storage.MediaCloudinaryStorage'
+CLOUDINARY_STORAGE = {
+    'CLOUD_NAME': config('CLOUD_NAME', default=''),
+    'API_KEY': config('API_KEY', default=''),
+    'API_SECRET': config('API_SECRET', default=''),
+}
+
+# Modern Storage Configuration (Django 4.2+)
+STORAGES = {
+    "default": {
+        "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
+    },
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedStaticFilesStorage",
+    },
+}
+
 #For Supabase
 DATABASES = {
     'default': {
@@ -202,7 +215,6 @@ USE_TZ = True
 STATIC_URL = 'static/'
 MEDIA_URL = '/media/'
 STATIC_ROOT = BASE_DIR / "staticfiles"
-STATICFILES_STORAGE="whitenoise.storage.CompressedStaticFilesStorage"
 MEDIA_ROOT = BASE_DIR / 'media'
 BACKEND_URL = config('BACKEND_URL', default='http://localhost:8000')
 FRONTEND_URL = config('FRONTEND_URL', default='http://localhost:5173')
