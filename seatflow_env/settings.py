@@ -23,6 +23,7 @@ ALLOWED_HOSTS = ["localhost",".vercel.app",'127.0.0.1']
 
 # Application definition
 
+
 INSTALLED_APPS = [
     "corsheaders",
     "whitenoise.runserver_nostatic",
@@ -32,6 +33,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'cloudinary_storage',
+    'cloudinary',
     'drf_spectacular',
     "phonenumber_field",
     'rest_framework',
