@@ -228,6 +228,8 @@ SSL_STORE_PASS = config('SSL_STORE_PASS', default='')
 SSL_IS_SANDBOX = config('SSL_IS_SANDBOX', default=True, cast=bool)
 
 # Professional Logging Configuration
+IS_VERCEL = config('VERCEL', default=False, cast=bool)
+
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
@@ -246,11 +248,6 @@ LOGGING = {
             'class': 'logging.StreamHandler',
             'formatter': 'simple',
         },
-        'file': {
-            'class': 'logging.FileHandler',
-            'filename': BASE_DIR / 'logs/debug.log',
-            'formatter': 'verbose',
-        },
     },
     'loggers': {
         'django': {
@@ -259,20 +256,30 @@ LOGGING = {
             'propagate': True,
         },
         'booking': {
-            'handlers': ['console', 'file'],
+            'handlers': ['console'],
             'level': 'INFO',
             'propagate': False,
         },
         'payment': {
-            'handlers': ['console', 'file'],
+            'handlers': ['console'],
             'level': 'INFO',
             'propagate': False,
         },
     },
 }
 
-# Create logs directory if it doesn't exist
-import os
-LOGS_DIR = BASE_DIR / 'logs'
-if not os.path.exists(LOGS_DIR):
-    os.makedirs(LOGS_DIR)
+# Only add FileHandler if not on Vercel
+if not IS_VERCEL:
+    LOGGING['handlers']['file'] = {
+        'class': 'logging.FileHandler',
+        'filename': BASE_DIR / 'logs/debug.log',
+        'formatter': 'verbose',
+    }
+    LOGGING['loggers']['booking']['handlers'].append('file')
+    LOGGING['loggers']['payment']['handlers'].append('file')
+    
+    # Create logs directory if it doesn't exist (Local Only)
+    import os
+    LOGS_DIR = BASE_DIR / 'logs'
+    if not os.path.exists(LOGS_DIR):
+        os.makedirs(LOGS_DIR)
