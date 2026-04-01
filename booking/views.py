@@ -9,6 +9,7 @@ from .serializers import (
     BookingSerializer,
     OrderItemSerializer,
 )
+from .services import BookingService
 from drf_spectacular.utils import extend_schema, extend_schema_view, OpenApiParameter, OpenApiTypes
 from django.utils.decorators import method_decorator
 
@@ -36,7 +37,7 @@ class SectionViewSet(ModelViewSet):
 )
 class SeatViewSet(ModelViewSet):
     permission_classes = [IsAdminOrReadOnly]
-    queryset = Seat.objects.all()
+    queryset = Seat.objects.select_related("section").all()
     serializer_class = SeatSerializer
 
     def perform_update(self, serializer):
@@ -80,31 +81,21 @@ class BookingViewSet(ModelViewSet):
             return Booking.objects.none()
 
         return Booking.objects.select_related(
-            "user",
-            "seat"
+            "user", 
+            "seat", 
+            "seat__section"
+        ).prefetch_related(
+            "order_items", 
+            "order_items__menu_item"
         ).filter(user=self.request.user)
 
     @transaction.atomic
     def perform_create(self, serializer):
-        seat = serializer.validated_data.get("seat")
-
-        if not seat.is_active:
-            raise serializers.ValidationError("This seat is not active")
-
-        if Booking.objects.filter(seat=seat, is_paid=True).exists():
-            raise serializers.ValidationError("This seat is already booked")
-
-        user_paid_count = Booking.objects.filter(
+        # Professional practice: business logic belongs in the service layer
+        BookingService.create_booking(
             user=self.request.user,
-            is_paid=True
-        ).count()
-
-        if user_paid_count >= 4:
-            raise serializers.ValidationError(
-                "You cannot book more than 4 paid seats"
-            )
-
-        serializer.save(user=self.request.user)
+            data=serializer.validated_data
+        )
 
     def perform_update(self, serializer):
         instance = self.get_object()

@@ -1,82 +1,70 @@
-# 🪑 SeatFlow 
+# 🪑 SeatFlow: Advanced Restaurant Table & Food Booking System
 
-SeatFlow is a complete, professional backend solution for a restaurant table seat-booking and food-ordering system. Designed with Django and Django REST Framework (DRF), it allows users to browse menus, book specific seats, pre-order food items, and complete payments seamlessly.
+**SeatFlow** is a robust, industry-grade backend solution designed to handle real-world restaurant operations. It features high-concurrency seat booking, dynamic food ordering, and secure payment integration using a professional Service Layer architecture.
 
-## ✨ Key Features
-* **User Authentication:** 
-  * Registration, Login, and User Profile management using `Djoser`.
-  * Secure token-based authentication using Postman and SimpleJWT.
-* **Menu Management:**
-  * Categorized menu items.
-  * Search, filter, and order menu items by name, price, rating, etc.
-  * Automatic review aggregation and average rating calculation.
-* **Advanced Booking System:**
-  * Seat reservation categorized by diverse sections.
-  * Define expected `booking_date`, `start_time` and `end_time`.
-  * Prevent booking overlapping times or already-paid seats.
-* **Order Customization:**
-  * Users can attach food orders (Order Items) to their specific seat booking.
-  * The system automatically recalculates the total `amount` payable on the booking every time a food item is added or removed.
-* **Payment Simulation:**
-  * Auto-generation of Booking Codes.
-  * Order/Booking cancellations are automatically blocked once the payment is "SUCCESS".
-* **Interactive API Documentation:**
-  * fully readable API endpoints structured via `Swagger` (`drf_yasg`) & Redoc.
+---
+
+## 🏗️ System Architecture
+This project follows **Clean Architecture** principles to ensure maintainability and scalability:
+- **Service Layer**: All business logic (validations, calculations) is decoupled from views and models into dedicated `services.py` modules.
+- **Thin Views**: API views only handle request parsing and response formatting, delegating complexity to services.
+- **Signals & Domain Events**: Automatic state updates (like recalculating booking totals) are handled via asynchronous-ready Django signals.
+- **Global Error Handling**: A universal exception handler ensures every API response follows a consistent, professional JSON structure.
+
+---
+
+## 🔥 Key Professional Features
+- **🛡️ Concurrency-Safe Booking**: Robust validation preventing overlapping time-slot reservations for the same table.
+- **💳 Payment Integration**: Full integration with **SSLCommerz**, featuring secure callbacks and transaction state synchronization.
+- **⚡ Performance Optimized**: Utilizes database-level optimizations including `select_related`, `prefetch_related`, and `annotate` to solve N+1 query problems.
+- **📝 Automated Documentation**: Fully documented interactive API using **drf-spectacular** (Swagger/Redoc).
+- **🧪 Quality Assurance**: Comprehensive unit test suite covering critical business rules (booking limits, seat availability).
+- **☁️ Cloud-Ready Media**: Seamless integration with **Cloudinary** for scalable image storage and **WhiteNoise** for static content.
+
+---
 
 ## 🛠️ Technology Stack
-* **Python 3.x**
-* **Django 6.0.2**
-* **Django REST Framework (DRF)**
-* **Djoser** (For Authentication)
-* **SimpleJWT** (For JWT Tokens)
-* **Drf-Yasg** (Swagger API Documentation)
+- **Backend**: Python 3.11, Django 6.0, Django REST Framework
+- **Auth**: Djoser, SimpleJWT (JWT Auth)
+- **Database**: PostgreSQL (Supabase/Neon ready)
+- **Utilities**: SSLCommerz SDK, Cloudinary, Django-Filter, Drf-Spectacular
+- **DevOps**: Vercel deployment ready, WhiteNoise
 
-## 🗃️ Project Structure
-The project is split into several modular apps keeping concerns separated strictly:
-* `accounts`: Handles Custom User Models, Roles (Admin/User), and standard Auth Views.
-* `menu`: Handles Categories, Menu Items, Reviews, and Menu Image uploads.
-* `booking`: Handles Sections, Seats, Bookings, and specific Order Items linked to bookings.
-* `payment`: Deals with Payment objects linked 1-to-1 with Bookings.
-* `api`: General router/urls consolidator.
+---
 
-## 🚀 How to Run Locally
+## 🚀 Getting Started
 
-### 1. Clone & Setup Environment
+### 1. Clone & Environment
 ```bash
-git clone <your-repository-url>
+git clone https://github.com/<your-username>/SeatFlow
 cd SeatFlow
-python -m venv .seatflow_env
-```
-Activate the environment:
-* **Windows:** `.seatflow_env\Scripts\activate`
-* **Mac/Linux:** `source .seatflow_env/bin/activate`
-
-### 2. Install Requirements
-```bash
+python -m venv .venv
+source .venv/bin/activate  # Or .venv\Scripts\activate on Windows
 pip install -r requirements.txt
 ```
-*(If `requirements.txt` is not available, manual installation of modules like django, djangorestframework, djoser, djangorestframework-simplejwt, and drf-yasg is required).*
 
-### 3. Run Migrations
+### 2. Configure Environment Variables
+Create a `.env` file based on the boilerplate:
+- `DATABASE_URL`, `SECRET_KEY`, `CLOUD_NAME`, `SSL_STORE_ID`, etc.
+
+### 3. Setup Database
 ```bash
-python manage.py makemigrations
 python manage.py migrate
-```
-
-### 4. Create a Superuser (Admin)
-```bash
 python manage.py createsuperuser
 ```
 
-### 5. Run the Server
+### 4. Run & Test
 ```bash
+python manage.py test  # Run the unit tests
 python manage.py runserver
 ```
 
-### 6. Explore APIs
-After running the server, you can view all structured API endpoints and test them directly via the browser at:
-* **Swagger UI:** [http://127.0.0.1:8000/swagger/](http://127.0.0.1:8000/swagger/)
-* **ReDoc UI:** [http://127.0.0.1:8000/redoc/](http://127.0.0.1:8000/redoc/)
+Explore the API at `http://127.0.0.1:8000/swagger/`
 
 ---
-***Developed with ❤️ by Hridoy***
+
+## 🤝 Contact & Credits
+**Developed by Hridoy**  
+*Aspiring Full-Stack Software Engineer dedicated to writing clean, maintainable, and human-readable code.*
+
+---

@@ -19,6 +19,7 @@ class SeatSerializer(serializers.ModelSerializer):
             "id",
             "section",
             "seat_number",
+            "capacity",
             "is_active",
             "created_at",
         ]
@@ -40,6 +41,7 @@ class BookingSerializer(serializers.ModelSerializer):
             "start_time",
             "end_time",
             "amount",
+            "status",
             "is_paid",
             "is_confirmed",
             "created_at",
@@ -49,6 +51,7 @@ class BookingSerializer(serializers.ModelSerializer):
             "booking_code": {"read_only": True},
             "user": {"read_only": True},
             "amount": {"read_only": True},
+            "status": {"read_only": True},
             "is_paid": {"read_only": True},
             "is_confirmed": {"read_only": True},
             "created_at": {"read_only": True},

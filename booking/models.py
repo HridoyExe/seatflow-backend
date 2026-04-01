@@ -20,6 +20,7 @@ class Seat(models.Model):
         blank=True
     )
     seat_number = models.CharField(max_length=20, unique=True)
+    capacity = models.PositiveIntegerField(default=1)
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
@@ -59,6 +60,19 @@ class Booking(models.Model):
     is_paid = models.BooleanField(default=False)
     is_confirmed = models.BooleanField(default=False)
 
+    BOOKING_STATUS = (
+        ("PENDING", "Pending"),
+        ("CONFIRMED", "Confirmed"),
+        ("CANCELLED", "Cancelled"),
+        ("COMPLETED", "Completed"),
+    )
+
+    status = models.CharField(
+        max_length=20, 
+        choices=BOOKING_STATUS, 
+        default="PENDING"
+    )
+
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -66,12 +80,6 @@ class Booking(models.Model):
 
     def __str__(self):
         return self.booking_code
-        
-    def update_total_amount(self):
-        # We can set a base seat price here if required, currently assuming 0 base cost or handled externally.
-        total = sum(item.get_cost() for item in self.order_items.all())
-        self.amount = total
-        self.save(update_fields=['amount'])
 
 
 class OrderItem(models.Model):
@@ -89,15 +97,6 @@ class OrderItem(models.Model):
 
     def get_cost(self):
         return self.menu_item.price * self.quantity
-
-    def save(self, *args, **kwargs):
-        super().save(*args, **kwargs)
-        self.booking.update_total_amount()
-
-    def delete(self, *args, **kwargs):
-        booking = self.booking
-        super().delete(*args, **kwargs)
-        booking.update_total_amount()
 
     def __str__(self):
         return f"{self.quantity} x {self.menu_item.name} (Booking: {self.booking.booking_code})"

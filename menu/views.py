@@ -104,7 +104,7 @@ class MenuItemViewSet(ModelViewSet):
         return (
             MenuItem.objects
             .select_related("category")
-            .prefetch_related("reviews")
+            .prefetch_related("reviews", "images")
             .annotate(
                 average_rating=Coalesce(
                     Avg("reviews__rating"),
@@ -146,8 +146,10 @@ class ReviewViewSet(ModelViewSet):
     permission_classes = [IsOwnerOrAdmin]
 
     def get_queryset(self):
+        item_pk = self.kwargs.get("item_pk")
         return (
             Review.objects
+            .filter(menu_item_id=item_pk)
             .select_related("user", "menu_item")
             .order_by("-created_at")
         )
