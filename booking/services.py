@@ -68,5 +68,10 @@ class BookingService:
         base_fee = 15.00 if booking.seat else 0.00
         
         items_total = sum(item.get_cost() for item in booking.order_items.all())
-        booking.amount = base_fee + float(items_total)
+        total = float(base_fee) + float(items_total)
+        
+        # Ensure minimum amount for payment gateway (SSLCommerz needs > 0)
+        # If the total is > 0 but < 10, we can force it to 10 or just leave it.
+        # However, 0 must be avoided.
+        booking.amount = round(total, 2)
         booking.save(update_fields=['amount'])

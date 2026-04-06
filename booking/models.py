@@ -50,6 +50,7 @@ class Booking(models.Model):
     name = models.CharField(max_length=100)
     phone = models.CharField(max_length=20)
     email = models.EmailField()
+    address = models.TextField(blank=True, null=True)
 
     special_request = models.TextField(blank=True)
 

@@ -6,13 +6,17 @@ from .models import Payment
 logger = logging.getLogger(__name__)
 
 class PaymentService:
+    """
+    Handles payment transaction logic and interacts with SSLCommerz.
+    Enforces consistency between payment records and booking states.
+    """
 
     @staticmethod
     def get_ssl_client():
         """Initializes the SSLCommerz client with project settings."""
         ssl_settings = {
             'store_id': settings.SSL_STORE_ID,
-            'store_passwd': settings.SSL_STORE_PASS,  
+            'store_pass': settings.SSL_STORE_PASS,
             'issandbox': settings.SSL_IS_SANDBOX
         }
         return SSLCOMMERZ(ssl_settings)
@@ -23,6 +27,10 @@ class PaymentService:
         """
         Creates a payment session with SSLCommerz and local Payment record.
         """
+        if amount <= 0:
+            logger.error(f"Cannot initiate payment for zero amount. Booking: {booking.booking_code}")
+            return None
+
         sslcz = cls.get_ssl_client()
         
         # Calculate number of items (Table + Order Items)
@@ -34,10 +42,11 @@ class PaymentService:
         tran_id = f"tnx_{booking.booking_code}"
         backend_url = getattr(settings, 'BACKEND_URL', 'http://localhost:8000')
 
-        # Mandatory Customer Info with fallbacks
-        cus_name = f"{user.first_name} {user.last_name}".strip() or "Valued Customer"
-        cus_phone = str(getattr(user, 'phone', '') or '01700000000') # Placeholder to avoid SSLCommerz 400
-        cus_add1 = getattr(user, 'address', '') or 'Dhaka, Bangladesh'
+        # Mandatory Customer Info with fallbacks from Booking if User profile is empty
+        cus_name = getattr(user, 'get_full_name', lambda: "")() or booking.name or "Valued Customer"
+        cus_phone = str(getattr(user, 'phone', '') or booking.phone or '01700000000')
+        cus_add1 = getattr(user, 'address', '') or booking.address or 'Dhaka, Bangladesh'
+        cus_email = user.email or booking.email
 
         post_body = {
             'total_amount': amount,
@@ -48,7 +57,7 @@ class PaymentService:
             'cancel_url': f"{backend_url}/api/payment/cancel/",
             'emi_option': 0,
             'cus_name': cus_name,
-            'cus_email': user.email,
+            'cus_email': cus_email,
             'cus_phone': cus_phone,
             'cus_add1': cus_add1,
             'cus_city': "Dhaka",
@@ -60,6 +69,7 @@ class PaymentService:
             'product_profile': "general",
         }
 
+        logger.info(f"Initiating SSLCommerz session for {tran_id} with amount {amount}")
         response = sslcz.createSession(post_body)
         
         if response.get('status') == 'SUCCESS':

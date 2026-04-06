@@ -59,6 +59,7 @@ class BookingSerializer(serializers.ModelSerializer):
             "name",
             "phone",
             "email",
+            "address",
             "special_request",
             "booking_date",
             "start_time",

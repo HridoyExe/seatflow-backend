@@ -2,7 +2,7 @@ from django.shortcuts import redirect
 from django.conf import settings
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
 from drf_spectacular.utils import extend_schema, inline_serializer
 from drf_spectacular.types import OpenApiTypes
@@ -62,12 +62,21 @@ def initiate_payment(request):
 )
 @csrf_exempt
 @api_view(['POST'])
+@permission_classes([AllowAny])
 def payment_success(request):
-    tran_id = request.data.get('tran_id')
+    # SSLCommerz sends data as form-data in a POST redirect. 
+    # DRF's request.data handles both JSON and Form-Data.
+    tran_id = request.data.get('tran_id') or request.POST.get('tran_id')
+    
+    if not tran_id:
+        logger.error(f"Success callback received without transaction ID. Data: {request.data}")
+        return Response({"error": "Transaction ID missing"}, status=400)
+
     if PaymentService.handle_payment_success(tran_id):
         frontend_url = getattr(settings, 'FRONTEND_URL', 'http://localhost:5173')
         return redirect(f"{frontend_url}/payment/success?tran_id={tran_id}")
-    return Response({"error": "Payment validation failed"}, status=400)
+    
+    return Response({"error": "Payment validation failed or transaction not found"}, status=400)
 
 @extend_schema(
     description="Callback for failed payments from SSLCommerz. Updates booking to FAILED status.",
@@ -79,8 +88,9 @@ def payment_success(request):
 )
 @csrf_exempt
 @api_view(['POST'])
+@permission_classes([AllowAny])
 def payment_fail(request):
-    tran_id = request.data.get('tran_id')
+    tran_id = request.data.get('tran_id') or request.POST.get('tran_id')
     PaymentService.handle_payment_failure(tran_id)
     frontend_url = getattr(settings, 'FRONTEND_URL', 'http://localhost:5173')
     return redirect(f"{frontend_url}/payment/fail?tran_id={tran_id}")
@@ -95,8 +105,9 @@ def payment_fail(request):
 )
 @csrf_exempt
 @api_view(['POST'])
+@permission_classes([AllowAny])
 def payment_cancel(request):
-    tran_id = request.data.get('tran_id')
+    tran_id = request.data.get('tran_id') or request.POST.get('tran_id')
     PaymentService.handle_payment_failure(tran_id, is_cancel=True)
     frontend_url = getattr(settings, 'FRONTEND_URL', 'http://localhost:5173')
     return redirect(f"{frontend_url}/payment/cancel?tran_id={tran_id}")
