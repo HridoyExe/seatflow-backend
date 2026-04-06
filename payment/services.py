@@ -1,4 +1,5 @@
 import logging
+import uuid
 from django.conf import settings
 from django.utils.crypto import get_random_string
 from sslcommerz_lib import SSLCOMMERZ
@@ -39,15 +40,15 @@ class PaymentService:
         if booking.seat:
             num_items += 1
         
-        # Transaction ID is tied to the unique booking code with a random string to avoid duplicates
-        # SSLCommerz Sandbox may reject identical tran_id if retry is attempted
-        tran_id = f"tnx_{booking.booking_code}_{get_random_string(6).upper()}"
+        # Transaction ID is tied to the unique booking code with a uuid to ensure absolute uniqueness
+        # This matches the style of your Gym project but with booking context.
+        tran_id = f"tnx_{booking.booking_code}_{str(uuid.uuid4())[:8]}"
         backend_url = getattr(settings, 'BACKEND_URL', 'http://localhost:8000')
 
         # Mandatory Customer Info with fallbacks from Booking if User profile is empty
         cus_name = getattr(user, 'get_full_name', lambda: "")() or booking.name or "Valued Customer"
         cus_phone = str(getattr(user, 'phone', '') or booking.phone or '01700000000')
-        cus_add1 = getattr(user, 'address', '') or booking.address or 'Dhaka, Bangladesh'
+        cus_add1 = getattr(user, 'address', '') or booking.address or 'Dhaka'
         cus_email = user.email or booking.email
 
         post_body = {
@@ -63,6 +64,8 @@ class PaymentService:
             'cus_phone': cus_phone,
             'cus_add1': cus_add1,
             'cus_city': "Dhaka",
+            'cus_state': "Dhaka",
+            'cus_postcode': "1212",
             'cus_country': "Bangladesh",
             'shipping_method': "NO",
             'num_of_item': num_items,
