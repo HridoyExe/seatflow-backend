@@ -77,7 +77,7 @@ class ReviewSerializer(serializers.ModelSerializer):
             "comment",
             "created_at",
         ]
-        read_only_fields = ["id", "user", "created_at"]
+        read_only_fields = ["id", "user", "menu_item", "created_at"]
 
     def get_rating_text(self, obj) -> str:
         rating_map = {
@@ -95,20 +95,5 @@ class ReviewSerializer(serializers.ModelSerializer):
                 "Comment cannot be empty."
             )
         return value
-
-    def validate(self, attrs):
-        request = self.context.get("request")
-
-        if request and request.method == "POST":
-            user = request.user
-            menu_item = attrs.get("menu_item")
-
-            if Review.objects.filter(
-                user=user,
-                menu_item=menu_item
-            ).exists():
-                raise serializers.ValidationError(
-                    "You already reviewed this item."
-                )
 
         return attrs

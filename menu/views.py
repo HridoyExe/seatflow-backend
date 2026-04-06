@@ -155,4 +155,12 @@ class ReviewViewSet(ModelViewSet):
         )
 
     def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
+        item_pk = self.kwargs.get("item_pk")
+        menu_item = get_object_or_404(MenuItem, pk=item_pk)
+        
+        # Check for duplicate review
+        if Review.objects.filter(user=self.request.user, menu_item=menu_item).exists():
+            from rest_framework.exceptions import ValidationError
+            raise ValidationError("You have already reviewed this item.")
+            
+        serializer.save(user=self.request.user, menu_item=menu_item)

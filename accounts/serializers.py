@@ -18,8 +18,8 @@ class AccountUserCreateSerializer(BaseUserSerializer):
 class AccountUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ["id", "email", "first_name", "last_name", "phone", "address", "profile_image", "role", "is_verified"]
-        read_only_fields = ["id", "email", "role", "is_verified"]
+        fields = ["id", "email", "first_name", "last_name", "phone", "address", "profile_image", "role", "is_verified", "is_staff", "is_superuser"]
+        read_only_fields = ["id", "email", "role", "is_verified", "is_staff", "is_superuser"]
 
     def to_internal_value(self, data):
         # Handle 'phonenumber' from frontend if sent

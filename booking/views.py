@@ -105,10 +105,13 @@ class BookingViewSet(ModelViewSet):
 
     @transaction.atomic
     def perform_create(self, serializer):
-        BookingService.create_booking(
+        # Delegate creation logic to Service layer
+        booking = BookingService.create_booking(
             user=self.request.user,
             data=serializer.validated_data
         )
+        # Crucial: Save the instance into the serializer so DRF returns the created object data (including ID)
+        serializer.instance = booking
 
     def perform_update(self, serializer):
         instance = self.get_object()
@@ -132,28 +135,21 @@ class DashboardStatsAPIView(APIView):
         user = request.user
         
         if user.role == 'ADMIN':
-            # Global Admin Stats
             stats = {
-                "total_revenue": Booking.objects.filter(is_paid=True).aggregate(Sum('amount'))['amount__sum'] or 0,
-                "total_bookings": Booking.objects.count(),
+                "total_revenue": Booking.objects.aggregate(Sum('amount'))['amount__sum'] or 0,
+                "total_bookings": Booking.objects.filter(seat__isnull=False).count(),
+                "total_orders": Booking.objects.filter(seat__isnull=True).count(),
                 "active_seats": Seat.objects.filter(is_active=True).count(),
-                "recent_transactions": BookingSerializer(
-                    Booking.objects.filter(is_paid=True).order_by('-created_at')[:5], 
-                    many=True
-                ).data
+                "recent_transactions": Booking.objects.order_by('-id')[:5].values('id', 'booking_code', 'name', 'amount', 'is_paid', 'booking_date', 'start_time')
             }
         else:
-            # Personal Member Stats
-            user_bookings = Booking.objects.filter(user=user)
-            completed_bookings = user_bookings.filter(status='COMPLETED', is_paid=True).count()
             stats = {
-                "total_visits": completed_bookings,
-                "loyalty_points": completed_bookings * 10,
-                "upcoming_bookings": user_bookings.filter(status__in=['PENDING', 'CONFIRMED']).count(),
-                "recent_bookings": BookingSerializer(
-                    user_bookings.order_by('-created_at')[:3], 
-                    many=True
-                ).data
+                "total_visits": Booking.objects.filter(user=user, is_paid=True).count(),
+                "loyalty_points": int((Booking.objects.filter(user=user, is_paid=True).aggregate(Sum('amount'))['amount__sum'] or 0) * 0.1),
+                "upcoming_bookings": Booking.objects.filter(user=user, booking_date__gte=date.today(), seat__isnull=False).count(),
+                "upcoming_orders": Booking.objects.filter(user=user, booking_date__gte=date.today(), seat__isnull=True).count(),
+                "total_bookings": Booking.objects.filter(user=user, seat__isnull=False).count(),
+                "total_orders": Booking.objects.filter(user=user, seat__isnull=True).count(),
             }
         
         return Response(stats)
