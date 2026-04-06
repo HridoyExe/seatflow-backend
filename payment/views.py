@@ -40,7 +40,11 @@ def initiate_payment(request):
     except Booking.DoesNotExist:
         return Response({"error": "Booking not found"}, status=404)
 
-    # Professional systems rely on internal calculations to avoid price tampering
+    # Professional systems rely on internal calculations to avoid price tampering.
+    # We call update_booking_total as a failsafe to ensure the food items are included.
+    from booking.services import BookingService
+    BookingService.update_booking_total(booking)
+    
     amount = float(booking.amount)
     payment_url = PaymentService.initiate_payment_session(user, booking, amount)
     

@@ -197,6 +197,10 @@ class OrderItemViewSet(ModelViewSet):
             raise serializers.ValidationError("You cannot add items to others booking")
 
         serializer.save(booking=booking)
+        
+        # Manually trigger recalculation of total booking amount
+        from .services import BookingService
+        BookingService.update_booking_total(booking)
 
     def update(self, request, *args, **kwargs):
         raise serializers.ValidationError("Update is not allowed for Order Items")
