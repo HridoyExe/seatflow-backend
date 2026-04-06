@@ -6,21 +6,18 @@ from .models import Payment
 logger = logging.getLogger(__name__)
 
 class PaymentService:
-    """
-    Handles payment transaction logic and interacts with SSLCommerz.
-    Enforces consistency between payment records and booking states.
-    """
 
     @staticmethod
     def get_ssl_client():
         """Initializes the SSLCommerz client with project settings."""
         ssl_settings = {
             'store_id': settings.SSL_STORE_ID,
-            'store_pass': settings.SSL_STORE_PASS,
+            'store_passwd': settings.SSL_STORE_PASS,  
             'issandbox': settings.SSL_IS_SANDBOX
         }
         return SSLCOMMERZ(ssl_settings)
 
+    
     @classmethod
     def initiate_payment_session(cls, user, booking, amount):
         """
