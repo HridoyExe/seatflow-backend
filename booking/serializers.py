@@ -24,6 +24,27 @@ class SeatSerializer(serializers.ModelSerializer):
             "created_at",
         ]
 
+class OrderItemSerializer(serializers.ModelSerializer):
+
+    menu_item_name = serializers.CharField(
+        source="menu_item.name",
+        read_only=True
+    )
+
+    class Meta:
+        model = OrderItem
+        fields = [
+            "id",
+            "booking",
+            "menu_item",
+            "menu_item_name",
+            "quantity",
+        ]
+
+        extra_kwargs = {
+            "booking": {"required": False},
+        }
+
 class BookingSerializer(serializers.ModelSerializer):
 
     order_items = OrderItemSerializer(many=True, read_only=True)
@@ -76,23 +97,3 @@ class BookingSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         validated_data["booking_code"] = "BOOK-" + get_random_string(6).upper()
         return super().create(validated_data)
-class OrderItemSerializer(serializers.ModelSerializer):
-
-    menu_item_name = serializers.CharField(
-        source="menu_item.name",
-        read_only=True
-    )
-
-    class Meta:
-        model = OrderItem
-        fields = [
-            "id",
-            "booking",
-            "menu_item",
-            "menu_item_name",
-            "quantity",
-        ]
-
-        extra_kwargs = {
-            "booking": {"required": False},
-        }
