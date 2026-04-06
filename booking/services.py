@@ -41,13 +41,13 @@ class BookingService:
     def create_booking(cls, user, data):
         seat = data.get('seat')
         
-        # Business logic validations
-        cls.validate_seat_availability(
-            seat, 
-            data.get('booking_date'), 
-            data.get('start_time'), 
-            data.get('end_time')
-        )
+        if seat:
+            cls.validate_seat_availability(
+                seat, 
+                data.get('booking_date'), 
+                data.get('start_time'), 
+                data.get('end_time')
+            )
         cls.check_user_booking_limit(user)
 
         # Generate unique booking code
@@ -58,11 +58,15 @@ class BookingService:
             booking_code=booking_code,
             **data
         )
+        cls.update_booking_total(booking)
         return booking
 
     @staticmethod
     def update_booking_total(booking):
-        """Recalculates the total amount based on associated order items."""
-        total = sum(item.get_cost() for item in booking.order_items.all())
-        booking.amount = total
+        """Recalculates the total amount based on associated order items and seat fee."""
+        # Baseline fee for table reservation (৳15.00)
+        base_fee = 15.00 if booking.seat else 0.00
+        
+        items_total = sum(item.get_cost() for item in booking.order_items.all())
+        booking.amount = base_fee + float(items_total)
         booking.save(update_fields=['amount'])

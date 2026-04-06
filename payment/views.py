@@ -49,7 +49,14 @@ def initiate_payment(request):
     
     return Response({"error": "Failed to create payment session"}, status= status.HTTP_503_SERVICE_UNAVAILABLE if 'status' in locals() else 400)
 
-@extend_schema(exclude=True)
+@extend_schema(
+    description="Callback for successful payments from SSLCommerz. Notifies the system to update booking status.",
+    request=inline_serializer(
+        name='PaymentSuccessRequest',
+        fields={'tran_id': serializers.CharField()}
+    ),
+    responses={200: OpenApiTypes.OBJECT}
+)
 @csrf_exempt
 @api_view(['POST'])
 def payment_success(request):
@@ -59,7 +66,14 @@ def payment_success(request):
         return redirect(f"{frontend_url}/payment/success?tran_id={tran_id}")
     return Response({"error": "Payment validation failed"}, status=400)
 
-@extend_schema(exclude=True)
+@extend_schema(
+    description="Callback for failed payments from SSLCommerz. Updates booking to FAILED status.",
+    request=inline_serializer(
+        name='PaymentFailRequest',
+        fields={'tran_id': serializers.CharField()}
+    ),
+    responses={200: OpenApiTypes.OBJECT}
+)
 @csrf_exempt
 @api_view(['POST'])
 def payment_fail(request):
@@ -68,7 +82,14 @@ def payment_fail(request):
     frontend_url = getattr(settings, 'FRONTEND_URL', 'http://localhost:5173')
     return redirect(f"{frontend_url}/payment/fail?tran_id={tran_id}")
 
-@extend_schema(exclude=True)
+@extend_schema(
+    description="Callback for cancelled payments from SSLCommerz. Updates booking to CANCELLED status.",
+    request=inline_serializer(
+        name='PaymentCancelRequest',
+        fields={'tran_id': serializers.CharField()}
+    ),
+    responses={200: OpenApiTypes.OBJECT}
+)
 @csrf_exempt
 @api_view(['POST'])
 def payment_cancel(request):

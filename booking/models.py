@@ -40,7 +40,9 @@ class Booking(models.Model):
     seat = models.ForeignKey(
         Seat,
         on_delete=models.CASCADE,
-        related_name="seat_bookings"
+        related_name="seat_bookings",
+        null=True,
+        blank=True
     )
 
     booking_code = models.CharField(max_length=100, unique=True)

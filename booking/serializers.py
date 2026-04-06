@@ -91,5 +91,5 @@ class OrderItemSerializer(serializers.ModelSerializer):
         ]
 
         extra_kwargs = {
-            "booking": {"read_only": True},
+            "booking": {"required": False},
         }
