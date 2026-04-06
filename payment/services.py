@@ -1,5 +1,6 @@
 import logging
 from django.conf import settings
+from django.utils.crypto import get_random_string
 from sslcommerz_lib import SSLCOMMERZ
 from .models import Payment
 
@@ -38,8 +39,9 @@ class PaymentService:
         if booking.seat:
             num_items += 1
         
-        # Transaction ID is tied to the unique booking code
-        tran_id = f"tnx_{booking.booking_code}"
+        # Transaction ID is tied to the unique booking code with a random string to avoid duplicates
+        # SSLCommerz Sandbox may reject identical tran_id if retry is attempted
+        tran_id = f"tnx_{booking.booking_code}_{get_random_string(6).upper()}"
         backend_url = getattr(settings, 'BACKEND_URL', 'http://localhost:8000')
 
         # Mandatory Customer Info with fallbacks from Booking if User profile is empty
