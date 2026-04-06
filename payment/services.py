@@ -22,15 +22,25 @@ class PaymentService:
         return SSLCOMMERZ(ssl_settings)
 
     @classmethod
-    def initiate_payment_session(cls, user, booking, amount, num_items=1):
+    def initiate_payment_session(cls, user, booking, amount):
         """
         Creates a payment session with SSLCommerz and local Payment record.
         """
         sslcz = cls.get_ssl_client()
         
+        # Calculate number of items (Table + Order Items)
+        num_items = booking.order_items.count()
+        if booking.seat:
+            num_items += 1
+        
         # Transaction ID is tied to the unique booking code
         tran_id = f"tnx_{booking.booking_code}"
         backend_url = getattr(settings, 'BACKEND_URL', 'http://localhost:8000')
+
+        # Mandatory Customer Info with fallbacks
+        cus_name = f"{user.first_name} {user.last_name}".strip() or "Valued Customer"
+        cus_phone = str(getattr(user, 'phone', '') or '01700000000') # Placeholder to avoid SSLCommerz 400
+        cus_add1 = getattr(user, 'address', '') or 'Dhaka, Bangladesh'
 
         post_body = {
             'total_amount': amount,
@@ -40,10 +50,10 @@ class PaymentService:
             'fail_url': f"{backend_url}/api/payment/fail/",
             'cancel_url': f"{backend_url}/api/payment/cancel/",
             'emi_option': 0,
-            'cus_name': f"{user.first_name} {user.last_name}",
+            'cus_name': cus_name,
             'cus_email': user.email,
-            'cus_phone': str(getattr(user, 'phone', '')),
-            'cus_add1': getattr(user, 'address', 'Dhaka'),
+            'cus_phone': cus_phone,
+            'cus_add1': cus_add1,
             'cus_city': "Dhaka",
             'cus_country': "Bangladesh",
             'shipping_method': "NO",

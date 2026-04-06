@@ -47,7 +47,10 @@ def initiate_payment(request):
     if payment_url:
         return Response({"payment_url": payment_url})
     
-    return Response({"error": "Failed to create payment session"}, status= status.HTTP_503_SERVICE_UNAVAILABLE if 'status' in locals() else 400)
+    return Response(
+        {"error": "Failed to create SSLCommerz payment session. Check logs for details."}, 
+        status=400
+    )
 
 @extend_schema(
     description="Callback for successful payments from SSLCommerz. Notifies the system to update booking status.",

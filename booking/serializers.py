@@ -26,6 +26,8 @@ class SeatSerializer(serializers.ModelSerializer):
 
 class BookingSerializer(serializers.ModelSerializer):
 
+    order_items = OrderItemSerializer(many=True, read_only=True)
+
     class Meta:
         model = Booking
         fields = [
@@ -44,6 +46,7 @@ class BookingSerializer(serializers.ModelSerializer):
             "status",
             "is_paid",
             "is_confirmed",
+            "order_items",
             "created_at",
         ]
 
