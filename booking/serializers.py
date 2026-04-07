@@ -30,6 +30,14 @@ class OrderItemSerializer(serializers.ModelSerializer):
         source="menu_item.name",
         read_only=True
     )
+    
+    # Including price for receipt and display
+    price = serializers.DecimalField(
+        source="menu_item.price", 
+        max_digits=10, 
+        decimal_places=2, 
+        read_only=True
+    )
 
     class Meta:
         model = OrderItem
@@ -38,8 +46,15 @@ class OrderItemSerializer(serializers.ModelSerializer):
             "booking",
             "menu_item",
             "menu_item_name",
+            "price",
             "quantity",
         ]
+
+    def to_internal_value(self, data):
+        # We need a mutable copy for QueryDicts
+        if hasattr(data, 'copy'):
+            data = data.copy()
+        return super().to_internal_value(data)
 
         extra_kwargs = {
             "booking": {"required": False},
@@ -48,6 +63,12 @@ class OrderItemSerializer(serializers.ModelSerializer):
 class BookingSerializer(serializers.ModelSerializer):
 
     order_items = OrderItemSerializer(many=True, read_only=True)
+    
+    def to_internal_value(self, data):
+        # Mutualize data for compatibility
+        if hasattr(data, 'copy'):
+            data = data.copy()
+        return super().to_internal_value(data)
 
     class Meta:
         model = Booking

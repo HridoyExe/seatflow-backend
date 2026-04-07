@@ -16,12 +16,14 @@ class BookingService:
         if not seat.is_active:
             raise InactiveSeatError()
 
-        # 2. Check for overlapping time slots
+        # Check for overlapping time slots
         # Rule: A booking overlaps if (new_start < exist_end) AND (new_end > exist_start)
+        # We exclude cancelled bookings to keep the seat available
         overlap = Booking.objects.filter(
             seat=seat,
             booking_date=booking_date,
-            is_paid=True
+        ).exclude(
+            status="CANCELLED"
         ).filter(
             Q(start_time__lt=end_time, end_time__gt=start_time)
         ).exists()

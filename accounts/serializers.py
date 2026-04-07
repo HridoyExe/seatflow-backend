@@ -9,7 +9,10 @@ class AccountUserCreateSerializer(BaseUserSerializer):
         fields = ["id", "email", "password", "first_name", "last_name", "phone", "profile_image"]
 
     def to_internal_value(self, data):
-        # Handle 'phonenumber' from frontend by mapping it to 'phone'
+        # We need a mutable copy if it's a QueryDict
+        if hasattr(data, 'copy'):
+            data = data.copy()
+            
         if 'phonenumber' in data and 'phone' not in data:
             data['phone'] = data['phonenumber']
         return super().to_internal_value(data)
@@ -22,7 +25,10 @@ class AccountUserSerializer(serializers.ModelSerializer):
         read_only_fields = ["id", "email", "role", "is_verified", "is_staff", "is_superuser"]
 
     def to_internal_value(self, data):
-        # Handle 'phonenumber' from frontend if sent
+    
+        if hasattr(data, 'copy'):
+            data = data.copy()
+            
         if 'phonenumber' in data and 'phone' not in data:
             data['phone'] = data['phonenumber']
         return super().to_internal_value(data)

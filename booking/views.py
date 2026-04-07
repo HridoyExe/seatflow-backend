@@ -15,6 +15,7 @@ from .serializers import (
 from .services import BookingService
 from drf_spectacular.utils import extend_schema, extend_schema_view, OpenApiParameter, OpenApiTypes
 from django.utils.decorators import method_decorator
+from datetime import date
 
 @extend_schema_view(
     list=extend_schema(description="List all sections"),
@@ -83,7 +84,7 @@ class BookingViewSet(ModelViewSet):
         if getattr(self, 'swagger_fake_view', False):
             return Booking.objects.none()
 
-        # Admin sees everything, Member sees only their own
+        # RBAC: Admins view all, Members view personal history
         if self.request.user.role == 'ADMIN':
             return Booking.objects.select_related(
                 "user", 
@@ -110,7 +111,7 @@ class BookingViewSet(ModelViewSet):
             user=self.request.user,
             data=serializer.validated_data
         )
-        # Crucial: Save the instance into the serializer so DRF returns the created object data (including ID)
+        # Reference the instance in the serializer for the final response
         serializer.instance = booking
 
     def perform_update(self, serializer):
@@ -135,12 +136,15 @@ class DashboardStatsAPIView(APIView):
         user = request.user
         
         if user.role == 'ADMIN':
+            # Revenue calculation based on completed payments
             stats = {
-                "total_revenue": Booking.objects.aggregate(Sum('amount'))['amount__sum'] or 0,
-                "total_bookings": Booking.objects.filter(seat__isnull=False).count(),
-                "total_orders": Booking.objects.filter(seat__isnull=True).count(),
+                "total_revenue": Booking.objects.filter(is_paid=True).aggregate(Sum('amount'))['amount__sum'] or 0,
+                "total_bookings": Booking.objects.filter(seat__isnull=False, is_paid=True).count(),
+                "total_orders": Booking.objects.filter(seat__isnull=True, is_paid=True).count(),
                 "active_seats": Seat.objects.filter(is_active=True).count(),
-                "recent_transactions": Booking.objects.order_by('-id')[:5].values('id', 'booking_code', 'name', 'amount', 'is_paid', 'booking_date', 'start_time')
+                "recent_transactions": Booking.objects.order_by('-id')[:5].values(
+                    'id', 'booking_code', 'name', 'amount', 'is_paid', 'booking_date', 'start_time'
+                )
             }
         else:
             stats = {
@@ -198,7 +202,7 @@ class OrderItemViewSet(ModelViewSet):
 
         serializer.save(booking=booking)
         
-        # Manually trigger recalculation of total booking amount
+        # Refresh the total price for the associated booking
         from .services import BookingService
         BookingService.update_booking_total(booking)
 
