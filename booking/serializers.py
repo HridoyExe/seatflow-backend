@@ -62,6 +62,8 @@ class OrderItemSerializer(serializers.ModelSerializer):
 
 class BookingSerializer(serializers.ModelSerializer):
 
+    seat_number = serializers.CharField(source="seat.seat_number", read_only=True)
+    section_name = serializers.CharField(source="seat.section.name", read_only=True)
     order_items = OrderItemSerializer(many=True, read_only=True)
     
     def to_internal_value(self, data):
@@ -76,6 +78,8 @@ class BookingSerializer(serializers.ModelSerializer):
             "id",
             "user",
             "seat",
+            "seat_number",
+            "section_name",
             "booking_code",
             "name",
             "phone",

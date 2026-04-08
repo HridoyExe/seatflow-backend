@@ -3,7 +3,8 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import serializers
 from django.db import transaction
-from django.db.models import Sum
+from django.db.models import Sum, Q
+from datetime import date, datetime, timedelta
 from .permissions import IsAuthenticatedUser, IsOwner, IsAdminOrReadOnly
 from .models import Section, Seat, Booking, OrderItem
 from .serializers import (
@@ -41,8 +42,41 @@ class SectionViewSet(ModelViewSet):
 )
 class SeatViewSet(ModelViewSet):
     permission_classes = [IsAdminOrReadOnly]
-    queryset = Seat.objects.select_related("section").all()
     serializer_class = SeatSerializer
+    
+    def get_queryset(self):
+        queryset = Seat.objects.select_related("section").all()
+        
+        # Availability Filtering via query params: date, start_time, end_time
+        date_param = self.request.query_params.get('date')
+        start_time_param = self.request.query_params.get('start_time')
+        end_time_param = self.request.query_params.get('end_time')
+        
+        if date_param and start_time_param:
+        
+            if not end_time_param:
+                try:
+                  
+                    time_format = '%H:%M:%S' if len(start_time_param.split(':')) == 3 else '%H:%M'
+                    start_dt = datetime.strptime(start_time_param, time_format)
+                    end_dt = start_dt + timedelta(hours=2)
+                    end_time_param = end_dt.strftime('%H:%M:%S')
+                except ValueError:
+                    pass
+            
+            if end_time_param:
+              
+                booked_seat_ids = Booking.objects.filter(
+                    booking_date=date_param,
+                ).exclude(
+                    status="CANCELLED"
+                ).filter(
+                    Q(start_time__lt=end_time_param, end_time__gt=start_time_param)
+                ).values_list('seat_id', flat=True)
+                
+                queryset = queryset.exclude(id__in=booked_seat_ids)
+                
+        return queryset
 
     def perform_update(self, serializer):
         instance = self.get_object()
@@ -84,7 +118,7 @@ class BookingViewSet(ModelViewSet):
         if getattr(self, 'swagger_fake_view', False):
             return Booking.objects.none()
 
-        # RBAC: Admins view all, Members view personal history
+       
         if self.request.user.role == 'ADMIN':
             return Booking.objects.select_related(
                 "user", 
@@ -147,13 +181,18 @@ class DashboardStatsAPIView(APIView):
                 )
             }
         else:
+           
+            total_spent = Booking.objects.filter(user=user, is_paid=True).aggregate(Sum('amount'))['amount__sum'] or 0
             stats = {
                 "total_visits": Booking.objects.filter(user=user, is_paid=True).count(),
-                "loyalty_points": int((Booking.objects.filter(user=user, is_paid=True).aggregate(Sum('amount'))['amount__sum'] or 0) * 0.1),
+                "loyalty_points": int(float(total_spent) * 0.1),
                 "upcoming_bookings": Booking.objects.filter(user=user, booking_date__gte=date.today(), seat__isnull=False).count(),
                 "upcoming_orders": Booking.objects.filter(user=user, booking_date__gte=date.today(), seat__isnull=True).count(),
                 "total_bookings": Booking.objects.filter(user=user, seat__isnull=False).count(),
                 "total_orders": Booking.objects.filter(user=user, seat__isnull=True).count(),
+                "recent_bookings": Booking.objects.filter(user=user).order_by('-id')[:5].values(
+                    'id', 'booking_code', 'name', 'amount', 'is_paid', 'booking_date', 'start_time', 'status'
+                )
             }
         
         return Response(stats)
@@ -189,6 +228,8 @@ class OrderItemViewSet(ModelViewSet):
         else:
              queryset = OrderItem.objects.select_related("booking","menu_item").filter(booking__user=self.request.user)
 
+        queryset = queryset.order_by('-id')
+
         booking_id = self.request.query_params.get("booking")
         if booking_id:
             queryset = queryset.filter(booking_id=booking_id)
@@ -215,4 +256,4 @@ class OrderItemViewSet(ModelViewSet):
     def perform_destroy(self, instance):
         if instance.booking.is_paid:
             raise serializers.ValidationError("You cannot cancel an order item for a paid booking")
-        instance.delete()
+        instance.delete()

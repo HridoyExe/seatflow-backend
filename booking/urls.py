@@ -3,7 +3,7 @@ from rest_framework.routers import DefaultRouter
 from .views import SeatViewSet, BookingViewSet, OrderItemViewSet, DashboardStatsAPIView
 
 router = DefaultRouter()
-router.register(r"seats", SeatViewSet)
+router.register(r"seats", SeatViewSet, basename="seat")
 router.register(r"bookings", BookingViewSet)
 router.register(r"order-items", OrderItemViewSet, basename="orderitem")  
 

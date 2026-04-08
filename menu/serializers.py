@@ -12,6 +12,7 @@ class MenuItemSerializer(serializers.ModelSerializer):
         source="category.name",
         read_only=True
     )
+    image = serializers.SerializerMethodField()
     average_rating = serializers.FloatField(read_only=True)
     total_reviews = serializers.IntegerField(read_only=True)
 
@@ -24,6 +25,7 @@ class MenuItemSerializer(serializers.ModelSerializer):
             "name",
             "description",
             "price",
+            "image",
             "is_special",
             "is_vegetarian",
             "is_spicy",
@@ -34,6 +36,12 @@ class MenuItemSerializer(serializers.ModelSerializer):
             "created_at",
         ]
         read_only_fields = ["id", "created_at"]
+
+    def get_image(self, obj):
+        image_obj = obj.images.first()
+        if image_obj and image_obj.image:
+            return image_obj.image.url
+        return None
 
 class CategorySerializer(serializers.ModelSerializer):
     menu_count = serializers.IntegerField(read_only=True)

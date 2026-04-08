@@ -131,7 +131,7 @@ class SendOTpView(APIView):
                 status=status.HTTP_400_BAD_REQUEST
             )
 
-        user = User.objects.filter(email=email).first()
+        user = User.objects.filter(email__iexact=email).first()
 
         if not user:
             return Response(
@@ -180,7 +180,7 @@ class VerifyOtpView(APIView):
     )
     def post(self, request):
         email = request.data.get("email")
-        code = request.data.get("code")
+        code = str(request.data.get("code", "")).strip()
 
         if not email or not code:
             return Response(
@@ -188,7 +188,7 @@ class VerifyOtpView(APIView):
                 status=status.HTTP_400_BAD_REQUEST
             )
 
-        user = User.objects.filter(email=email).first()
+        user = User.objects.filter(email__iexact=email).first()
 
         if not user:
             return Response(
